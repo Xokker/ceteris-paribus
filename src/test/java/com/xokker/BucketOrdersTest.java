@@ -5,12 +5,14 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.*;
 
 public class BucketOrdersTest {
 
-    Multimap<Integer, PrefEntry> preferences;
+    private Multimap<Integer, PrefEntry> preferences;
 
     @Before
     public void setUp() throws Exception {
@@ -27,4 +29,12 @@ public class BucketOrdersTest {
         assertEquals(10, pairOrder.getColumnDimension());
     }
 
+    @Test
+    public void testBucketPivot1() throws Exception {
+        BucketOrders bucketOrders = new BucketOrders(preferences.get(4));
+        List<Set<Integer>> buckets = bucketOrders.bucketPivot();
+
+        assertNotNull(buckets);
+        assertFalse(buckets.isEmpty());
+    }
 }
