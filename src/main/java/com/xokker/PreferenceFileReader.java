@@ -20,20 +20,15 @@ public class PreferenceFileReader {
     /**
      * @return key - userId, value - their preferences
      */
-    public static Multimap<Integer, PrefEntry> readFromFile(String pathToFile) {
+    public static Multimap<Integer, PrefEntry> readFromFile(String pathToFile) throws IOException {
         Path path = Paths.get(pathToFile);
 
         ImmutableMultimap.Builder<Integer, PrefEntry> builder = ImmutableMultimap.builder();
-
-        try {
-            Files.lines(path)
-                    .skip(1)
-                    .map(s -> s.split(","))
-                    .filter(ar -> Objects.equals(ar[3], "0"))
-                    .forEach(ar -> builder.put(parseInt(ar[0]), new PrefEntry(parseInt(ar[1]), parseInt(ar[2]))));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Files.lines(path)
+                .skip(1)
+                .map(s -> s.split(","))
+                .filter(ar -> Objects.equals(ar[3], "0"))
+                .forEach(ar -> builder.put(parseInt(ar[0]), new PrefEntry(parseInt(ar[1]), parseInt(ar[2]))));
 
         return builder.build();
     }
