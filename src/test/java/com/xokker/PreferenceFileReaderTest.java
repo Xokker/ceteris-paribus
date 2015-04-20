@@ -9,7 +9,7 @@ public class PreferenceFileReaderTest {
 
     @Test
     public void testReadFromFile() throws Exception {
-        Multimap<Integer, PrefEntry> prefs = PreferenceFileReader.readFromFile(Datasets.PathCars1);
+        Multimap<Integer, PrefEntry> prefs = PreferenceFileReader.readFromFile(Datasets.Cars1);
 
         assertNotNull(prefs);
         assertFalse(prefs.isEmpty());
