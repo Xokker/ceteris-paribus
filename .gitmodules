@@ -1,0 +1,3 @@
+[submodule "fcalib"]
+	path = fcalib
+	url = git@github.com:julianmendez/fcalib.git
