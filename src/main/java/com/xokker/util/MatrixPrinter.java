@@ -1,4 +1,4 @@
-package com.xokker;
+package com.xokker.util;
 
 import org.apache.commons.math3.linear.RealMatrix;
 

@@ -1,7 +1,8 @@
-package com.xokker;
+package com.xokker.util;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.xokker.PrefEntry;
 
 import java.io.IOException;
 import java.nio.file.Files;

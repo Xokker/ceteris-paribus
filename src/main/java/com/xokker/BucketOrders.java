@@ -8,7 +8,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static com.xokker.MatrixPrinter.println;
+import static com.xokker.util.MatrixPrinter.println;
 
 /**
  * An implementation of the ranking algorithm proposed in
