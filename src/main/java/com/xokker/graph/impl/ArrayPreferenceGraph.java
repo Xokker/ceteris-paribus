@@ -14,6 +14,7 @@ public class ArrayPreferenceGraph<I extends Number> implements PreferenceGraph<I
         preferences = new boolean[numberOfDifferentElements][];
         for (int i = 0; i < numberOfDifferentElements; i++) {
             preferences[i] = new boolean[numberOfDifferentElements];
+            preferences[i][i] = true;
         }
     }
 
