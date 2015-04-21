@@ -1,5 +1,6 @@
 package com.xokker;
 
+import com.xokker.graph.PreferenceGraph;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -19,10 +20,11 @@ public class PreferenceContextTest {
     private static final String DarkInterior = "dark interior";
 
     private HashSet<String> allAttrs = newHashSet(Minivan, SUV, RedExterior, WhiteExterior, BrightInterior, DarkInterior);
+    private PreferenceGraph<Integer> preferenceGraph = null;
 
     @Test
     public void testGetAttributeExtent1() throws Exception {
-        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs);
+        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs, preferenceGraph);
         addObjects(preferenceContext);
         Set<Integer> extent = preferenceContext.getAttributeExtent(newHashSet(SUV));
 
@@ -32,7 +34,7 @@ public class PreferenceContextTest {
 
     @Test
     public void testGetAttributeExtent2() throws Exception {
-        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs);
+        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs, preferenceGraph);
         addObjects(preferenceContext);
         Set<Integer> extent = preferenceContext.getAttributeExtent(newHashSet(WhiteExterior, Minivan));
 
@@ -42,7 +44,7 @@ public class PreferenceContextTest {
 
     @Test
     public void testGetObjectIntent1() throws Exception {
-        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs);
+        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs, preferenceGraph);
         addObjects(preferenceContext);
         Set<String> intent = preferenceContext.getObjectIntent(newHashSet(3));
 
@@ -52,7 +54,7 @@ public class PreferenceContextTest {
 
     @Test
     public void testGetObjectIntent2() throws Exception {
-        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs);
+        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs, preferenceGraph);
         addObjects(preferenceContext);
         Set<String> intent = preferenceContext.getObjectIntent(newHashSet(4, 5));
 
@@ -62,7 +64,7 @@ public class PreferenceContextTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddObjectException() throws Exception {
-        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs);
+        PreferenceContext<Integer, String> preferenceContext = new PreferenceContext<>(allAttrs, preferenceGraph);
         addObjects(preferenceContext);
         preferenceContext.addObject(6, newHashSet("wrong attribute"));
         preferenceContext.getAttributeExtent(newHashSet(WhiteExterior, "wrong attribute"));
