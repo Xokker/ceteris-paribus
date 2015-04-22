@@ -1,5 +1,6 @@
 package com.xokker;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
 import org.apache.commons.math3.linear.DefaultRealMatrixChangingVisitor;
 import org.apache.commons.math3.linear.MatrixUtils;
@@ -33,6 +34,8 @@ public class BucketOrders {
      */
     private final int numberOfItems;
 
+    private final Random random;
+
     /**
      * @param preferences preferences of the individual user
      * @param numberOfItems number of different items
@@ -40,6 +43,7 @@ public class BucketOrders {
     public BucketOrders(Collection<PrefEntry> preferences, int numberOfItems) {
         this.preferences = preferences;
         this.numberOfItems = numberOfItems;
+        this.random = new Random();
     }
 
     public BucketOrders(Collection<PrefEntry> preferences) {
@@ -85,7 +89,7 @@ public class BucketOrders {
         if (items.isEmpty()) {
             return new ArrayList<>();
         }
-        Integer pivot = items.iterator().next(); // TODO: select truly random element
+        int pivot = selectPivot(items);
         Set<Integer> left = Sets.newHashSet();
         Set<Integer> center = Sets.newHashSet(pivot);
         Set<Integer> right = Sets.newHashSet();
@@ -105,6 +109,11 @@ public class BucketOrders {
         result.addAll(bucketPivot0(right, pairOrderMatrix));
 
         return result;
+    }
+
+    private int selectPivot(Set<Integer> items) {
+        int position = random.nextInt(items.size());
+        return Iterators.get(items.iterator(), position);
     }
 
     private RealMatrix zeros(int size) {
