@@ -15,12 +15,13 @@ import static org.junit.Assert.assertTrue;
 public class CeterisParibusTest {
 
     private HashSet<String> allAttrs = newHashSet(Minivan, SUV, RedExterior, WhiteExterior, BrightInterior, DarkInterior);
-    private PreferenceGraph<Integer> preferenceGraph;
-    PreferenceContext<Integer, String> preferenceContext;
+    private PreferenceContext<Integer, String> preferenceContext;
+    private HashSet<String> c6 = newHashSet(SUV, RedExterior, BrightInterior);
+    private HashSet<String> c7 = newHashSet(Minivan, RedExterior, BrightInterior);
 
     @Before
     public void setUp() throws Exception {
-        preferenceGraph = new ArrayPreferenceGraph<>(5);
+        PreferenceGraph<Integer> preferenceGraph = new ArrayPreferenceGraph<>(5);
         preferenceGraph.setLeq(1 - 1, 5 - 1);
         preferenceGraph.setLeq(2 - 1, 5 - 1);
         preferenceGraph.setLeq(3 - 1, 5 - 1);
@@ -36,24 +37,13 @@ public class CeterisParibusTest {
 
     @Test
     public void testPredictPreference1() throws Exception {
-        HashSet<String> c6 = newHashSet(SUV, RedExterior, BrightInterior);
-        HashSet<String> c7 = newHashSet(Minivan, RedExterior, BrightInterior);
         boolean res = new CeterisParibus<>(preferenceContext).predictPreference(c6, c7);
-
         assertTrue(res);
     }
 
     @Test
     public void testPredictPreference2() throws Exception {
-        HashSet<String> c6 = newHashSet(SUV, RedExterior, BrightInterior);
-        HashSet<String> c7 = newHashSet(Minivan, RedExterior, BrightInterior);
         boolean res = new CeterisParibus<>(preferenceContext).predictPreference(c7, c6);
-
         assertFalse(res);
-    }
-
-    @Test
-    public void testCheckPreference() throws Exception {
-
     }
 }
