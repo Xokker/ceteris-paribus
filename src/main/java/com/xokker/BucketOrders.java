@@ -1,7 +1,7 @@
 package com.xokker;
 
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
+import com.xokker.util.SetUtils;
 import org.apache.commons.math3.linear.DefaultRealMatrixChangingVisitor;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -91,7 +91,7 @@ public class BucketOrders {
         if (items.isEmpty()) {
             return new ArrayList<>();
         }
-        Identifiable pivot = selectPivot(items);
+        Identifiable pivot = SetUtils.randomElement(items);
         Set<Identifiable> left = Sets.newHashSet();
         Set<Identifiable> center = Sets.newHashSet(pivot);
         Set<Identifiable> right = Sets.newHashSet();
@@ -111,11 +111,6 @@ public class BucketOrders {
         result.addAll(bucketPivot0(right, pairOrderMatrix));
 
         return result;
-    }
-
-    private Identifiable selectPivot(Set<Identifiable> items) {
-        int position = random.nextInt(items.size());
-        return Iterators.get(items.iterator(), position);
     }
 
     private RealMatrix zeros(int size) {
