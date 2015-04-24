@@ -15,21 +15,21 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 21.04.2015
  */
-public class PreferenceContext<I extends Number, A> {
+public class PreferenceContext<A> {
 
     private final Set<A> possibleAttributes;
-    private final SetMultimap<I, A> objects;
-    private final SetMultimap<A, I> attributesToObjects;
-    private final PreferenceGraph<I> preferenceGraph;
+    private final SetMultimap<Identifiable, A> objects;
+    private final SetMultimap<A, Identifiable> attributesToObjects;
+    private final PreferenceGraph preferenceGraph;
 
-    public PreferenceContext(Set<A> possibleAttributes, PreferenceGraph<I> preferenceGraph) {
+    public PreferenceContext(Set<A> possibleAttributes, PreferenceGraph preferenceGraph) {
         this.possibleAttributes = possibleAttributes;
         this.preferenceGraph = preferenceGraph;
         this.objects = HashMultimap.create();
         this.attributesToObjects = HashMultimap.create();
     }
 
-    public void addObject(I id, Set<A> attributes) {
+    public void addObject(Identifiable id, Set<A> attributes) {
         for (A attribute : attributes) {
             Preconditions.checkArgument(
                     possibleAttributes.contains(attribute),
@@ -39,24 +39,24 @@ public class PreferenceContext<I extends Number, A> {
         }
     }
 
-    public Set<I> getAttributeExtent(A attribute) {
+    public Set<Identifiable> getAttributeExtent(A attribute) {
         return getAttributeExtent(singleton(attribute));
     }
 
-    public Set<I> getAttributeExtent(Collection<A> attributes) {
+    public Set<Identifiable> getAttributeExtent(Collection<A> attributes) {
         return attributes.stream()
                 .map(attributesToObjects::get)
                 .collect(
-                        () -> (Set<I>)new HashSet<>(objects.keySet()),
+                        () -> (Set<Identifiable>)new HashSet<>(objects.keySet()),
                         Set::retainAll,
                         Set::retainAll);
     }
 
-    public Set<A> getObjectIntent(I object) {
+    public Set<A> getObjectIntent(Identifiable object) {
         return getObjectIntent(singleton(object));
     }
 
-    public Set<A> getObjectIntent(Collection<I> objects0) {
+    public Set<A> getObjectIntent(Collection<Identifiable> objects0) {
         return objects0.stream()
                 .map(objects::get)
                 .collect(
@@ -68,11 +68,11 @@ public class PreferenceContext<I extends Number, A> {
     /**
      * Checks whether the left object is at least as good as right object
      */
-    public boolean leq(I left, I right) {
+    public boolean leq(Identifiable left, Identifiable right) {
         return preferenceGraph.leq(left, right);
     }
 
-    public Set<I> getAllObjects() {
+    public Set<Identifiable> getAllObjects() {
         return new HashSet<>(objects.keySet());
     }
 

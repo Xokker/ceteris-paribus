@@ -13,11 +13,11 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 21.04.2015
  */
-public class CeterisParibus<I extends Number, A> {
+public class CeterisParibus<A> {
 
-    private final PreferenceContext<I, A> context;
+    private final PreferenceContext<A> context;
 
-    public CeterisParibus(PreferenceContext<I, A> context) {
+    public CeterisParibus(PreferenceContext<A> context) {
         this.context = context;
     }
 
@@ -25,11 +25,11 @@ public class CeterisParibus<I extends Number, A> {
      * Implementation of the Algorithm 1
      */
     public boolean predictPreference(Set<A> a, Set<A> b) {
-        Set<I> allObjects = context.getAllObjects();
+        Set<Identifiable> allObjects = context.getAllObjects();
         Set<A> allAttributes = context.getAllAttributes();
-        for (I g : allObjects) {
+        for (Identifiable g : allObjects) {
             Set<A> d = intersection(a, context.getObjectIntent(g));
-            for (I h : difference(allObjects, singleton(g))) {
+            for (Identifiable h : difference(allObjects, singleton(g))) {
                 if (context.leq(g, h)) {
                     Set<A> hIntent = context.getObjectIntent(h);
                     Set<A> gIntent = context.getObjectIntent(g);
@@ -52,10 +52,10 @@ public class CeterisParibus<I extends Number, A> {
      * Implementation of the Algorithm 2
      */
     boolean checkPreference(Set<A> d, Set<A> f, Set<A> e) {
-        Set<I> x = context.getAttributeExtent(d);
-        Set<I> y = context.getAttributeExtent(e);
-        for (I g : x) {
-            for (I h : y) {
+        Set<Identifiable> x = context.getAttributeExtent(d);
+        Set<Identifiable> y = context.getAttributeExtent(e);
+        for (Identifiable g : x) {
+            for (Identifiable h : y) {
                 Set<A> gIntent = context.getObjectIntent(g);
                 Set<A> hIntent = context.getObjectIntent(h);
                 if (!context.leq(g, h) && intersection(gIntent, f).equals(intersection(hIntent, f))) {

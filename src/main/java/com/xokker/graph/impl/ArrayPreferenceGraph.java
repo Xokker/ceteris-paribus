@@ -1,12 +1,13 @@
 package com.xokker.graph.impl;
 
+import com.xokker.Identifiable;
 import com.xokker.graph.PreferenceGraph;
 
 /**
  * @author Ernest Sadykov
  * @since 21.04.2015
  */
-public class ArrayPreferenceGraph<I extends Number> implements PreferenceGraph<I> {
+public class ArrayPreferenceGraph implements PreferenceGraph {
 
     private final boolean[][] preferences;
 
@@ -23,13 +24,13 @@ public class ArrayPreferenceGraph<I extends Number> implements PreferenceGraph<I
     }
 
     @Override
-    public void setLeq(I left, I right) {
-        preferences[left.intValue()][right.intValue()] = true;
+    public void setLeq(Identifiable left, Identifiable right) {
+        preferences[left.getId()][right.getId()] = true;
     }
 
     @Override
-    public boolean leq(I left, I right) {
-        return preferences[left.intValue()][right.intValue()];
+    public boolean leq(Identifiable left, Identifiable right) {
+        return preferences[left.getId()][right.getId()];
     }
 
 }
