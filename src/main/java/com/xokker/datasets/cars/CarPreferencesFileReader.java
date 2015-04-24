@@ -30,9 +30,16 @@ public class CarPreferencesFileReader {
                 .skip(1)                                  // skip header
                 .map(s -> s.split(","))
                 .filter(ar -> Objects.equals(ar[3], "0")) // skip control questions
-                .forEach(ar -> builder.put(parseInt(ar[0]), new PrefEntry(parseInt(ar[1]), parseInt(ar[2]))));
+                .forEach(ar -> builder.put(parseInt(ar[0]), createPrefEntry(ar[1], ar[2])));
 
         return builder.build();
+    }
+
+    private static PrefEntry createPrefEntry(String left, String right) {
+        Identifiable l = ii(parseInt(left) - 1);
+        Identifiable r = ii(parseInt(right) - 1);
+
+        return new PrefEntry(l, r);
     }
 
     public static Map<Identifiable, Set<CarAttributes>> readItems(String pathToFile) throws IOException {

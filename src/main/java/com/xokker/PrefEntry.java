@@ -1,5 +1,6 @@
 package com.xokker;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -9,13 +10,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class PrefEntry {
 
-    public PrefEntry(int id1, int id2) {
+    public PrefEntry(Identifiable id1, Identifiable id2) {
+        Preconditions.checkNotNull(id1);
+        Preconditions.checkNotNull(id2);
         this.id1 = id1;
         this.id2 = id2;
     }
 
-    public final int id1;
-    public final int id2;
+    public final Identifiable id1;
+    public final Identifiable id2;
 
     @Override
     public boolean equals(Object o) {
@@ -24,14 +27,13 @@ public class PrefEntry {
 
         PrefEntry prefEntry = (PrefEntry) o;
 
-        return id1 == prefEntry.id1 && id2 == prefEntry.id2;
+        return id1.equals(prefEntry.id1) && id2.equals(prefEntry.id2);
     }
 
     @Override
     public int hashCode() {
-        int result = id1;
-        result = 31 * result + id2;
-
+        int result = id1.hashCode();
+        result = 31 * result + id2.hashCode();
         return result;
     }
 

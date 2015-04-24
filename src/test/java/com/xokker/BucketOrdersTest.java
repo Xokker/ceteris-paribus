@@ -34,7 +34,7 @@ public class BucketOrdersTest {
     @Test
     public void testBucketPivot1() throws Exception {
         BucketOrders bucketOrders = new BucketOrders(preferences.get(4));
-        List<Set<Integer>> buckets = bucketOrders.bucketPivot();
+        List<Set<Identifiable>> buckets = bucketOrders.bucketPivot();
 
         assertNotNull(buckets);
         assertFalse(buckets.isEmpty());

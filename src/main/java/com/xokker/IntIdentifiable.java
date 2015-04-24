@@ -1,6 +1,7 @@
 package com.xokker;
 
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * @author Ernest Sadykov
@@ -41,5 +42,10 @@ public class IntIdentifiable implements Identifiable {
     @Override
     public int hashCode() {
         return value.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
     }
 }

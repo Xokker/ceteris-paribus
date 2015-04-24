@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.xokker.util.MatrixPrinter.println;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * An implementation of the ranking algorithm proposed in
@@ -53,7 +54,7 @@ public class BucketOrders {
     RealMatrix pairOrderMatrix() {
         RealMatrix counter = zeros(numberOfItems);
         preferences.stream()
-                .forEach(e -> counter.addToEntry(e.id1 - 1, e.id2 - 1, 1));
+                .forEach(e -> counter.addToEntry(e.id1.getId(), e.id2.getId(), 1));
         println(counter);
 
         RealMatrix result = zeros(numberOfItems);
@@ -73,28 +74,29 @@ public class BucketOrders {
         return result;
     }
 
-    public List<Set<Integer>> bucketPivot() {
+    public List<Set<Identifiable>> bucketPivot() {
         RealMatrix pairOrderMatrix = pairOrderMatrix();
         return bucketPivot0(createRange(numberOfItems), pairOrderMatrix);
     }
 
-    private Set<Integer> createRange(int numberOfItems) {
-        Set<Integer> res = new HashSet<>();
-        IntStream.range(1, numberOfItems + 1).forEach(res::add);
-
-        return res;
+    private Set<Identifiable> createRange(int numberOfItems) {
+        return IntStream
+                .range(0, numberOfItems)
+                .boxed()
+                .map(IntIdentifiable::ii)
+                .collect(toSet());
     }
 
-    private List<Set<Integer>> bucketPivot0(Set<Integer> items, RealMatrix pairOrderMatrix) {
+    private List<Set<Identifiable>> bucketPivot0(Set<Identifiable> items, RealMatrix pairOrderMatrix) {
         if (items.isEmpty()) {
             return new ArrayList<>();
         }
-        int pivot = selectPivot(items);
-        Set<Integer> left = Sets.newHashSet();
-        Set<Integer> center = Sets.newHashSet(pivot);
-        Set<Integer> right = Sets.newHashSet();
-        for (Integer item : items) {
-            double entry = pairOrderMatrix.getEntry(pivot - 1, item - 1);
+        Identifiable pivot = selectPivot(items);
+        Set<Identifiable> left = Sets.newHashSet();
+        Set<Identifiable> center = Sets.newHashSet(pivot);
+        Set<Identifiable> right = Sets.newHashSet();
+        for (Identifiable item : items) {
+            double entry = pairOrderMatrix.getEntry(pivot.getId(), item.getId());
             if (entry < Half - Beta) {
                 left.add(item);
             } else if (entry > Half + Beta) {
@@ -104,14 +106,14 @@ public class BucketOrders {
             }
         }
 
-        List<Set<Integer>> result = bucketPivot0(left, pairOrderMatrix);
+        List<Set<Identifiable>> result = bucketPivot0(left, pairOrderMatrix);
         result.add(center);
         result.addAll(bucketPivot0(right, pairOrderMatrix));
 
         return result;
     }
 
-    private int selectPivot(Set<Integer> items) {
+    private Identifiable selectPivot(Set<Identifiable> items) {
         int position = random.nextInt(items.size());
         return Iterators.get(items.iterator(), position);
     }
@@ -122,7 +124,7 @@ public class BucketOrders {
 
     private static int computeNumberOfItems(Collection<PrefEntry> preferences) {
         return (int) preferences.stream()
-                .flatMapToInt(e -> IntStream.of(e.id1, e.id2))
+                .flatMapToInt(e -> IntStream.of(e.id1.getId(), e.id2.getId()))
                 .distinct()
                 .count();
     }
