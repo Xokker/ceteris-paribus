@@ -1,5 +1,6 @@
 package com.xokker.util;
 
+import com.xokker.Config;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.PrintStream;
@@ -16,6 +17,9 @@ public class MatrixPrinter {
     }
 
     public static void println(RealMatrix matrix, PrintStream printStream) {
+        if (Config.isQuiteMode()) {
+            return;
+        }
         for (int row = 0; row < matrix.getRowDimension(); row++) {
             printStream.println(Arrays.toString(matrix.getRow(row)));
         }
