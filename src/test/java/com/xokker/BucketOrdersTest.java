@@ -18,7 +18,7 @@ public class BucketOrdersTest {
 
     @Before
     public void setUp() throws Exception {
-        preferences = CarPreferencesFileReader.readFromFile(Datasets.Cars1);
+        preferences = CarPreferencesFileReader.readPreferences(Datasets.Cars1.getPrefsPath());
     }
 
     @Test
