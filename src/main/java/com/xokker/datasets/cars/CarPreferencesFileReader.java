@@ -42,7 +42,7 @@ public class CarPreferencesFileReader {
         return new PrefEntry(l, r);
     }
 
-    public static Map<Identifiable, Set<CarAttributes>> readItems(String pathToFile) throws IOException {
+    public static Map<Identifiable, Set<CarAttribute>> readItems(String pathToFile) throws IOException {
         List<String> lines = readLines(pathToFile);
         Map<Integer, String> headers = new HashMap<>();
         String[] splittedHeaders = lines.get(0).split(",");
@@ -50,15 +50,15 @@ public class CarPreferencesFileReader {
             headers.put(i, splittedHeaders[i].trim());
         }
 
-        Map<Identifiable, Set<CarAttributes>> result = new HashMap<>();
+        Map<Identifiable, Set<CarAttribute>> result = new HashMap<>();
         lines.stream()
                 .skip(1)
                 .map(s -> s.split(","))
                 .forEach(ar -> {
                     int id = Integer.parseInt(ar[0]);
-                    Set<CarAttributes> attrs = EnumSet.noneOf(CarAttributes.class);
+                    Set<CarAttribute> attrs = EnumSet.noneOf(CarAttribute.class);
                     for (int i = 1; i < ar.length; i++) {
-                        attrs.add(CarAttributes.get(headers.get(i), ar[i]));
+                        attrs.add(CarAttribute.get(headers.get(i), ar[i]));
                     }
                     result.put(ii(id - 1), attrs);
                 });

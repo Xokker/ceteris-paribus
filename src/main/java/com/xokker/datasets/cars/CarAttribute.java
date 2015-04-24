@@ -15,7 +15,7 @@ import com.google.common.base.Preconditions;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public enum CarAttributes {
+public enum CarAttribute {
 
     Sedan       ("BodyType", "1"),
     SUV         ("BodyType", "2"),
@@ -39,16 +39,16 @@ public enum CarAttributes {
     private final String category;
     private final String id;
 
-    CarAttributes(String category, String id) {
+    CarAttribute(String category, String id) {
         this.category = category;
         this.id = id;
     }
 
-    public static CarAttributes get(String category, String id) {
+    public static CarAttribute get(String category, String id) {
         Preconditions.checkNotNull(category);
         Preconditions.checkNotNull(id);
 
-        for (CarAttributes item : values()) {
+        for (CarAttribute item : values()) {
             if (category.equals(item.getCategory()) && id.equals(item.getId())) {
                 return item;
             }

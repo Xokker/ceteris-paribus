@@ -26,22 +26,22 @@ public class CarPreferencesFileReaderTest {
 
     @Test
     public void testReadItems1() throws Exception {
-        Map<Identifiable, Set<CarAttributes>> cars = CarPreferencesFileReader.readItems(Datasets.Cars1.getItemsPath());
+        Map<Identifiable, Set<CarAttribute>> cars = CarPreferencesFileReader.readItems(Datasets.Cars1.getItemsPath());
 
         assertNotNull(cars);
         assertEquals(10, cars.keySet().size());
-        for (Set<CarAttributes> carAttributeses : cars.values()) {
+        for (Set<CarAttribute> carAttributeses : cars.values()) {
             assertEquals(4, carAttributeses.size());
         }
     }
 
     @Test
     public void testReadItems2() throws Exception {
-        Map<Identifiable, Set<CarAttributes>> cars = CarPreferencesFileReader.readItems(Datasets.Cars2.getItemsPath());
+        Map<Identifiable, Set<CarAttribute>> cars = CarPreferencesFileReader.readItems(Datasets.Cars2.getItemsPath());
 
         assertNotNull(cars);
         assertEquals(20, cars.keySet().size());
-        for (Set<CarAttributes> carAttributeses : cars.values()) {
+        for (Set<CarAttribute> carAttributeses : cars.values()) {
             assertEquals(5, carAttributeses.size());
         }
     }
