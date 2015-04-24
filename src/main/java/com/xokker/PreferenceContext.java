@@ -7,6 +7,7 @@ import com.xokker.graph.PreferenceGraph;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
@@ -36,6 +37,12 @@ public class PreferenceContext<A> {
                     "context cannot hold '" + attribute + "' attribute");
             objects.put(id, attribute);
             attributesToObjects.put(attribute, id);
+        }
+    }
+
+    public void addObjects(Map<Identifiable, Set<A>> objects) {
+        for (Map.Entry<Identifiable, Set<A>> entry : objects.entrySet()) {
+            addObject(entry.getKey(), entry.getValue());
         }
     }
 

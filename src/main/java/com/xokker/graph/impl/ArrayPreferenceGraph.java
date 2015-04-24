@@ -35,4 +35,17 @@ public class ArrayPreferenceGraph implements PreferenceGraph {
         return preferences[left.getId()][right.getId()];
     }
 
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder();
+        for (boolean[] preference : preferences) {
+            for (boolean b : preference) {
+                res.append(b).append(" ");
+            }
+            res.append("\n");
+        }
+
+        return res.toString();
+    }
+
 }
