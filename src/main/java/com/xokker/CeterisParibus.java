@@ -41,6 +41,9 @@ public class CeterisParibus<A> {
                             difference(allAttributes, symmetricDifference(gIntent, hIntent))
                     );
                     if (checkPreference(d, f, e)) {
+                        if (!Config.isQuiteMode()) {
+                            System.out.println(d + " <" + f + "= " + e);
+                        }
                         return true;
                     }
                 }

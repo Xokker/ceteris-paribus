@@ -28,9 +28,9 @@ public class Cars1 {
     private void crossValidation(Map<Identifiable, Set<CarAttribute>> objects, Collection<PrefEntry> preferences) {
         BucketOrders bucketOrders = new BucketOrders(preferences);
         List<Set<Identifiable>> originalBuckets = bucketOrders.bucketPivot();
-        mergeTwoRandomElement(originalBuckets);
-        mergeTwoRandomElement(originalBuckets);
-        mergeTwoRandomElement(originalBuckets);
+        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
+        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
+        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
 
         for (int removedElementBucketIndex = 0; removedElementBucketIndex < originalBuckets.size(); removedElementBucketIndex++) {
             List<Set<Identifiable>> buckets = new ArrayList<>(originalBuckets);
@@ -87,11 +87,17 @@ public class Cars1 {
         return buckets.stream().mapToInt(Set::size).sum();
     }
 
-    private void mergeTwoRandomElement(List<Set<Identifiable>> originalBuckets) {
-        int i = random.nextInt(originalBuckets.size() - 1);
-        Set<Identifiable> set = originalBuckets.remove(i + 1);
+    private void mergeRandomBuckets(List<Set<Identifiable>> originalBuckets, int numberOfBucketsToMerge) {
+        int startWith = originalBuckets.size() - numberOfBucketsToMerge;
+        if (startWith < 0) {
+            return;
+        }
+        int i = random.nextInt(startWith);
         Set<Identifiable> element = originalBuckets.get(i);
-        element.addAll(set);
+        for (int j = 1; j < numberOfBucketsToMerge; j++) {
+            Set<Identifiable> set = originalBuckets.remove(i + j);
+            element.addAll(set);
+        }
     }
 
     private <T> Set<T> mergeSets(Collection<Set<T>> values) {
