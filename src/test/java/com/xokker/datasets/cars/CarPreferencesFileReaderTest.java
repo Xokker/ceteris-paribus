@@ -1,4 +1,4 @@
-package com.xokker.util;
+package com.xokker.datasets.cars;
 
 import com.google.common.collect.Multimap;
 import com.xokker.PrefEntry;
@@ -7,11 +7,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class PreferenceFileReaderTest {
+public class CarPreferencesFileReaderTest {
 
     @Test
     public void testReadFromFile() throws Exception {
-        Multimap<Integer, PrefEntry> prefs = PreferenceFileReader.readFromFile(Datasets.Cars1);
+        Multimap<Integer, PrefEntry> prefs = CarPreferencesFileReader.readFromFile(Datasets.Cars1);
 
         assertNotNull(prefs);
         assertFalse(prefs.isEmpty());

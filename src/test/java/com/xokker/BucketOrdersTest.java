@@ -2,7 +2,7 @@ package com.xokker;
 
 import com.google.common.collect.Multimap;
 import com.xokker.datasets.Datasets;
-import com.xokker.util.PreferenceFileReader;
+import com.xokker.datasets.cars.CarPreferencesFileReader;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class BucketOrdersTest {
 
     @Before
     public void setUp() throws Exception {
-        preferences = PreferenceFileReader.readFromFile(Datasets.Cars1);
+        preferences = CarPreferencesFileReader.readFromFile(Datasets.Cars1);
     }
 
     @Test

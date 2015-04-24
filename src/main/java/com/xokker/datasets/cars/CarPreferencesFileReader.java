@@ -1,4 +1,4 @@
-package com.xokker.util;
+package com.xokker.datasets.cars;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -16,7 +16,7 @@ import static java.lang.Integer.parseInt;
  * @author Ernest Sadykov
  * @since 20.04.2015
  */
-public class PreferenceFileReader {
+public class CarPreferencesFileReader {
 
     /**
      * @return key - userId, value - their preferences
@@ -26,9 +26,9 @@ public class PreferenceFileReader {
 
         ImmutableMultimap.Builder<Integer, PrefEntry> builder = ImmutableMultimap.builder();
         Files.lines(path)
-                .skip(1)
+                .skip(1)                                  // skip header
                 .map(s -> s.split(","))
-                .filter(ar -> Objects.equals(ar[3], "0"))
+                .filter(ar -> Objects.equals(ar[3], "0")) // skip control questions
                 .forEach(ar -> builder.put(parseInt(ar[0]), new PrefEntry(parseInt(ar[1]), parseInt(ar[2]))));
 
         return builder.build();
