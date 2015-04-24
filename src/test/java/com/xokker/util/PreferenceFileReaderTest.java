@@ -1,8 +1,8 @@
 package com.xokker.util;
 
 import com.google.common.collect.Multimap;
-import com.xokker.Datasets;
 import com.xokker.PrefEntry;
+import com.xokker.datasets.Datasets;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

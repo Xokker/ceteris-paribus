@@ -21,7 +21,7 @@ public class PreferenceContextTest {
     @Before
     public void setUp() throws Exception {
         preferenceContext = new PreferenceContext<>(AllAttrs, null);
-        ContextUrils.addObjects(preferenceContext);
+        ContextUtils.addObjects(preferenceContext);
     }
 
     @Test

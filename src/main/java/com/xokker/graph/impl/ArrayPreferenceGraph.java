@@ -4,6 +4,8 @@ import com.xokker.Identifiable;
 import com.xokker.graph.PreferenceGraph;
 
 /**
+ * Matrix-based implementation of preference graph
+ *
  * @author Ernest Sadykov
  * @since 21.04.2015
  */

@@ -10,6 +10,8 @@ import static java.util.Collections.singleton;
  * "Ceteris Paribus: Preferences Prediction via Abduction" by Sergei Obiedkov
  * http://publications.hse.ru/en/chapters/98938030
  *
+ * @param <A> type of objects' attributes
+ *
  * @author Ernest Sadykov
  * @since 21.04.2015
  */

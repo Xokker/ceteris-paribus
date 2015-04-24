@@ -1,6 +1,7 @@
 package com.xokker;
 
 import com.google.common.collect.Multimap;
+import com.xokker.datasets.Datasets;
 import com.xokker.util.PreferenceFileReader;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.junit.Before;
