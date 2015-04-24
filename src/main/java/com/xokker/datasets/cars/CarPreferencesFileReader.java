@@ -13,6 +13,7 @@ import java.util.*;
 
 import static com.xokker.IntIdentifiable.ii;
 import static java.lang.Integer.parseInt;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Ernest Sadykov
@@ -24,10 +25,8 @@ public class CarPreferencesFileReader {
      * @return key - userId, value - their preferences
      */
     public static Multimap<Integer, PrefEntry> readPreferences(String pathToFile) throws IOException {
-        Path path = Paths.get(pathToFile);
-
         ImmutableMultimap.Builder<Integer, PrefEntry> builder = ImmutableMultimap.builder();
-        Files.lines(path)
+        readLines(pathToFile).stream()
                 .skip(1)                                  // skip header
                 .map(s -> s.split(","))
                 .filter(ar -> Objects.equals(ar[3], "0")) // skip control questions
@@ -37,9 +36,7 @@ public class CarPreferencesFileReader {
     }
 
     public static Map<Identifiable, Set<CarAttributes>> readItems(String pathToFile) throws IOException {
-        Path path = Paths.get(pathToFile);
-
-        List<String> lines = Files.readAllLines(path);
+        List<String> lines = readLines(pathToFile);
         Map<Integer, String> headers = new HashMap<>();
         String[] splittedHeaders = lines.get(0).split(",");
         for (int i = 0; i < splittedHeaders.length; i++) {
@@ -60,6 +57,20 @@ public class CarPreferencesFileReader {
                 });
 
         return result;
+    }
+
+    public static Set<Integer> readUsers(String pathToFile) throws IOException {
+        return readLines(pathToFile).stream()
+                .map(s -> s.split(","))
+                .filter(ar -> "5".equals(ar[5])) // exclude liars
+                .map(ar -> ar[0])
+                .map(Integer::parseInt)
+                .collect(toSet());
+    }
+
+    private static List<String> readLines(String pathToFile) throws IOException {
+        Path path = Paths.get(pathToFile);
+        return Files.readAllLines(path);
     }
 
 }

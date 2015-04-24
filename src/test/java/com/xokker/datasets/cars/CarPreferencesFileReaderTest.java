@@ -45,4 +45,12 @@ public class CarPreferencesFileReaderTest {
             assertEquals(5, carAttributeses.size());
         }
     }
+
+    @Test
+    public void testReadUsers() throws Exception {
+        Set<Integer> users = CarPreferencesFileReader.readUsers(Datasets.Cars1.getUsersPath());
+
+        assertNotNull(users);
+        assertEquals(31, users.size());
+    }
 }
