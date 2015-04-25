@@ -42,7 +42,7 @@ public class CeterisParibus<A> {
                     );
                     if (checkPreference(d, f, e)) {
                         if (!Config.isQuiteMode()) {
-                            System.out.println(d + " <" + f + "= " + e);
+                            System.out.println(d + " <" + f + "= " + e + "    for " + a + " and " + b);
                         }
                         return true;
                     }

@@ -68,6 +68,7 @@ public class CarPreferencesFileReader {
 
     public static Set<Integer> readUsers(String pathToFile) throws IOException {
         return readLines(pathToFile).stream()
+                .skip(1)
                 .map(s -> s.split(","))
                 .filter(ar -> "5".equals(ar[5])) // exclude liars
                 .map(ar -> ar[0])

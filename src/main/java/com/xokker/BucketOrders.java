@@ -76,6 +76,8 @@ public class BucketOrders {
 
     public List<Set<Identifiable>> bucketPivot() {
         RealMatrix pairOrderMatrix = pairOrderMatrix();
+        System.out.println("pair order matrix: ");
+        println(pairOrderMatrix);
         return bucketPivot0(createRange(numberOfItems), pairOrderMatrix);
     }
 

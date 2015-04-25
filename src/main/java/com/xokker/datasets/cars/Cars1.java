@@ -28,21 +28,25 @@ public class Cars1 {
     private void crossValidation(Map<Identifiable, Set<CarAttribute>> objects, Collection<PrefEntry> preferences) {
         BucketOrders bucketOrders = new BucketOrders(preferences);
         List<Set<Identifiable>> originalBuckets = bucketOrders.bucketPivot();
-        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
-        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
-        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
+//        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
+//        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
+//        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
 
         for (int removedElementBucketIndex = 0; removedElementBucketIndex < originalBuckets.size(); removedElementBucketIndex++) {
-            List<Set<Identifiable>> buckets = new ArrayList<>(originalBuckets);
-            PreferenceGraph preferenceGraph = new ArrayPreferenceGraph(deepSize(buckets));
-            initBucketOrder(preferenceGraph, buckets);
+            List<Set<Identifiable>> buckets = deepCopy(originalBuckets);
 
             Set<Identifiable> originalRandomBucket = buckets.get(removedElementBucketIndex);
             Set<Identifiable> randomBucket = new HashSet<>(originalRandomBucket);
-            Identifiable removedElement = CollectionUtils.removeRandom(randomBucket);
+            int randomBucketIndex = originalBuckets.indexOf(randomBucket);
 
+            Identifiable removedElement = CollectionUtils.removeRandom(randomBucket);
+            buckets.get(randomBucketIndex).remove(removedElement);
+
+            PreferenceGraph preferenceGraph = new ArrayPreferenceGraph(objects.size());
+            initBucketOrder(preferenceGraph, buckets);
             PreferenceContext<CarAttribute> context = new PreferenceContext<>(mergeSets(objects.values()), preferenceGraph);
-            context.addObjects(objects);
+
+            context.addObjects(mapWithoutKey(objects, removedElement));
             CeterisParibus<CarAttribute> ceterisParibus = new CeterisParibus<>(context);
 
             int penalty = 0;
@@ -51,7 +55,7 @@ public class Cars1 {
             boolean after = removedElementBucketIndex == 0;
 
             boolean ret;
-            for (Set<Identifiable> bucket : originalBuckets) {
+            for (Set<Identifiable> bucket : buckets) {
                 if (bucket.equals(originalRandomBucket)) {
                     // elements in the same bucket must be incomparable
                     for (Identifiable id : randomBucket) {
@@ -80,7 +84,25 @@ public class Cars1 {
             }
 
             System.out.println("removedElementBucketIndex: " + removedElementBucketIndex + " penalty: " + penalty);
+            if (penalty > 0) {
+                System.out.println("!!!!");
+            }
         }
+    }
+
+    private Map<Identifiable, Set<CarAttribute>> mapWithoutKey(Map<Identifiable, Set<CarAttribute>> objects, Identifiable removedElement) {
+        Map<Identifiable, Set<CarAttribute>> objectsWithoutElement = new HashMap<>(objects);
+        objectsWithoutElement.remove(removedElement);
+        return objectsWithoutElement;
+    }
+
+    private List<Set<Identifiable>> deepCopy(List<Set<Identifiable>> originalBuckets) {
+        List<Set<Identifiable>> res = new ArrayList<>();
+        for (Set<Identifiable> originalBucket : originalBuckets) {
+            res.add(new HashSet<>(originalBucket));
+        }
+
+        return res;
     }
 
     private int deepSize(List<Set<Identifiable>> buckets) {
@@ -111,6 +133,9 @@ public class Cars1 {
         Map<Identifiable, Set<CarAttribute>> objects = readItems(Cars1.getItemsPath());
         Set<Integer> users = readUsers(Cars1.getUsersPath());
         System.out.println("users: " + users);
+        System.out.println("objects: ");
+        objects.entrySet().stream().forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
+        System.out.println();
 
         Cars1 cars1 = new Cars1();
         for (Integer user : users) {
