@@ -23,6 +23,7 @@ public class Config {
         quiteMode = BooleanUtils.toBoolean(config.getProperty("quite_mode", "false"));
     }
 
+    @Deprecated
     public static boolean isQuiteMode() {
         return quiteMode;
     }

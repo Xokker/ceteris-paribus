@@ -9,7 +9,6 @@ import org.apache.commons.math3.linear.RealMatrix;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static com.xokker.util.MatrixPrinter.println;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -55,7 +54,6 @@ public class BucketOrders {
         RealMatrix counter = zeros(numberOfItems);
         preferences.stream()
                 .forEach(e -> counter.addToEntry(e.id1.getId(), e.id2.getId(), 1));
-        println(counter);
 
         RealMatrix result = zeros(numberOfItems);
         result.walkInOptimizedOrder(new DefaultRealMatrixChangingVisitor() {
@@ -76,8 +74,6 @@ public class BucketOrders {
 
     public List<Set<Identifiable>> bucketPivot() {
         RealMatrix pairOrderMatrix = pairOrderMatrix();
-        System.out.println("pair order matrix: ");
-        println(pairOrderMatrix);
         return bucketPivot0(createRange(numberOfItems), pairOrderMatrix);
     }
 

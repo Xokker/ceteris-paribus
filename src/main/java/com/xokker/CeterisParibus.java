@@ -1,5 +1,8 @@
 package com.xokker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Set;
 
 import static com.google.common.collect.Sets.*;
@@ -16,6 +19,8 @@ import static java.util.Collections.singleton;
  * @since 21.04.2015
  */
 public class CeterisParibus<A> {
+
+    private static final Logger logger = LoggerFactory.getLogger(CeterisParibus.class);
 
     private final PreferenceContext<A> context;
 
@@ -41,9 +46,7 @@ public class CeterisParibus<A> {
                             difference(allAttributes, symmetricDifference(gIntent, hIntent))
                     );
                     if (checkPreference(d, f, e)) {
-                        if (!Config.isQuiteMode()) {
-                            System.out.println(d + " <" + f + "= " + e + "    for " + a + " and " + b);
-                        }
+                        logger.debug("{} <{}= {}    for {} and {}", d, f, e, a, b);
                         return true;
                     }
                 }

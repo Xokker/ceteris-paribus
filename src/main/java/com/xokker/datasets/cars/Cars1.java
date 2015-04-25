@@ -5,6 +5,8 @@ import com.xokker.*;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.util.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -19,6 +21,8 @@ import static java.util.stream.Collectors.toSet;
  * @since 24.04.2015
  */
 public class Cars1 {
+
+    private static final Logger logger = LoggerFactory.getLogger(Cars1.class);
 
     private Random random = new Random();
 
@@ -83,10 +87,7 @@ public class Cars1 {
                 }
             }
 
-            System.out.println("removedElementBucketIndex: " + removedElementBucketIndex + " penalty: " + penalty);
-            if (penalty > 0) {
-                System.out.println("!!!!");
-            }
+            logger.info("removedElementBucketIndex: {} penalty: {}", removedElementBucketIndex, penalty);
         }
     }
 
@@ -132,14 +133,12 @@ public class Cars1 {
         Multimap<Integer, PrefEntry> preferences = readPreferences(Cars1.getPrefsPath());
         Map<Identifiable, Set<CarAttribute>> objects = readItems(Cars1.getItemsPath());
         Set<Integer> users = readUsers(Cars1.getUsersPath());
-        System.out.println("users: " + users);
-        System.out.println("objects: ");
-        objects.entrySet().stream().forEach(e -> System.out.println(e.getKey() + " -> " + e.getValue()));
-        System.out.println();
+        logger.info("users: {}", users);
+        objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
         Cars1 cars1 = new Cars1();
         for (Integer user : users) {
-            System.out.println("user " + user);
+            logger.info("user " + user);
             cars1.crossValidation(objects, preferences.get(user));
         }
     }
