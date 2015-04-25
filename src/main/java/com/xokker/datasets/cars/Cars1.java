@@ -163,6 +163,10 @@ public class Cars1 {
     }
 
     public static void main(String[] args) throws IOException {
-        new Cars1().crossValidation(CeterisParibus::new);
+        Cars1 cars1 = new Cars1();
+        Collection<Stats> stats = cars1.crossValidation(CeterisParibus::new).values();
+        DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
+        logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
+                summary.getMax(), summary.getMin(), summary.getAverage());
     }
 }
