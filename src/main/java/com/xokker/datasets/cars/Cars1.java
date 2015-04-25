@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.xokker.datasets.Datasets.Cars1;
 import static com.xokker.datasets.cars.CarPreferencesFileReader.*;
@@ -27,15 +28,44 @@ public class Cars1 {
     private Random random = new Random();
 
     /**
+     * @return key - user
+     *         value - stats for this user
+     */
+    public Map<Integer, Stats> crossValidation(
+            Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator)
+            throws IOException {
+
+        Multimap<Integer, PrefEntry> preferences = readPreferences(Cars1.getPrefsPath());
+        Map<Identifiable, Set<CarAttribute>> objects = readItems(Cars1.getItemsPath());
+        Set<Integer> users = readUsers(Cars1.getUsersPath());
+        logger.info("users: {}", users);
+        objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
+
+        Map<Integer, Stats> result = new HashMap<>(users.size());
+        for (Integer user : users) {
+            logger.info("user {}:", user);
+            Stats stats = crossValidation(objects, preferences.get(user), predictorCreator);
+            logger.info("avg penalty for user #{} is {}", user, stats.getAveragePenalty());
+            result.put(user, stats);
+        }
+
+        return result;
+    }
+
+    /**
      * Cross-validation for single user
      */
-    private void crossValidation(Map<Identifiable, Set<CarAttribute>> objects, Collection<PrefEntry> preferences) {
+    private Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
+                                  Collection<PrefEntry> preferences,
+                                  Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
         BucketOrders bucketOrders = new BucketOrders(preferences);
         List<Set<Identifiable>> originalBuckets = bucketOrders.bucketPivot();
+        logger.info("bucket order: {}", originalBuckets);
 //        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
 //        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
 //        mergeRandomBuckets(originalBuckets, random.nextInt(2) + 2);
 
+        Stats result = new Stats();
         for (int removedElementBucketIndex = 0; removedElementBucketIndex < originalBuckets.size(); removedElementBucketIndex++) {
             List<Set<Identifiable>> buckets = deepCopy(originalBuckets);
 
@@ -51,7 +81,7 @@ public class Cars1 {
             PreferenceContext<CarAttribute> context = new PreferenceContext<>(mergeSets(objects.values()), preferenceGraph);
 
             context.addObjects(mapWithoutKey(objects, removedElement));
-            CeterisParibus<CarAttribute> ceterisParibus = new CeterisParibus<>(context);
+            PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
 
             int penalty = 0;
 
@@ -63,11 +93,11 @@ public class Cars1 {
                 if (bucket.equals(originalRandomBucket)) {
                     // elements in the same bucket must be incomparable
                     for (Identifiable id : randomBucket) {
-                        ret = ceterisParibus.predictPreference(objects.get(id), objects.get(removedElement));
+                        ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
                         if (ret) {
                             penalty++;
                         }
-                        ret = ceterisParibus.predictPreference(objects.get(removedElement), objects.get(id));
+                        ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
                         if (ret) {
                             penalty++;
                         }
@@ -75,11 +105,11 @@ public class Cars1 {
                     after = true;
                 } else {
                     for (Identifiable id : bucket) {
-                        ret = ceterisParibus.predictPreference(objects.get(id), objects.get(removedElement));
+                        ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
                         if (after && ret || !after && !ret) { // element should go before any element of the current bucket
                             penalty++;
                         }
-                        ret = ceterisParibus.predictPreference(objects.get(removedElement), objects.get(id));
+                        ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
                         if (!after && ret || after && !ret) { // element should go after any element of the current bucket
                             penalty++;
                         }
@@ -87,8 +117,11 @@ public class Cars1 {
                 }
             }
 
+            result.addPenalty(penalty);
             logger.info("removedElementBucketIndex: {} penalty: {}", removedElementBucketIndex, penalty);
         }
+
+        return result;
     }
 
     private Map<Identifiable, Set<CarAttribute>> mapWithoutKey(Map<Identifiable, Set<CarAttribute>> objects, Identifiable removedElement) {
@@ -130,16 +163,6 @@ public class Cars1 {
     }
 
     public static void main(String[] args) throws IOException {
-        Multimap<Integer, PrefEntry> preferences = readPreferences(Cars1.getPrefsPath());
-        Map<Identifiable, Set<CarAttribute>> objects = readItems(Cars1.getItemsPath());
-        Set<Integer> users = readUsers(Cars1.getUsersPath());
-        logger.info("users: {}", users);
-        objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
-
-        Cars1 cars1 = new Cars1();
-        for (Integer user : users) {
-            logger.info("user " + user);
-            cars1.crossValidation(objects, preferences.get(user));
-        }
+        new Cars1().crossValidation(CeterisParibus::new);
     }
 }

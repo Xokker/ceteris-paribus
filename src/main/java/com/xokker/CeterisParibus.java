@@ -18,7 +18,7 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 21.04.2015
  */
-public class CeterisParibus<A> {
+public class CeterisParibus<A> implements PreferencePredictor<A> {
 
     private static final Logger logger = LoggerFactory.getLogger(CeterisParibus.class);
 
