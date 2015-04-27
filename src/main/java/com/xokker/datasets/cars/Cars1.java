@@ -167,6 +167,10 @@ public class Cars1 {
         Collection<Stats> stats = cars1.crossValidation(CeterisParibus::new).values();
         DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
         logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
-                summary.getMax(), summary.getMin(), summary.getAverage());
+                format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));
+    }
+
+    private static String format(double d) {
+        return String.format("%.2f", d);
     }
 }
