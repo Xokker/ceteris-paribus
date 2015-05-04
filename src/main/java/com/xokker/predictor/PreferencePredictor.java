@@ -1,4 +1,4 @@
-package com.xokker;
+package com.xokker.predictor;
 
 import java.util.Set;
 

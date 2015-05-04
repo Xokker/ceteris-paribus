@@ -4,6 +4,8 @@ import com.google.common.collect.Multimap;
 import com.xokker.*;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
+import com.xokker.predictor.PreferencePredictor;
+import com.xokker.predictor.impl.CeterisParibusPredictor;
 import com.xokker.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +166,7 @@ public class Cars1 {
 
     public static void main(String[] args) throws IOException {
         Cars1 cars1 = new Cars1();
-        Collection<Stats> stats = cars1.crossValidation(CeterisParibus::new).values();
+        Collection<Stats> stats = cars1.crossValidation(CeterisParibusPredictor::new).values();
         DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
         logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
                 format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));

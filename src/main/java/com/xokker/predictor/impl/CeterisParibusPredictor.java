@@ -1,5 +1,8 @@
-package com.xokker;
+package com.xokker.predictor.impl;
 
+import com.xokker.Identifiable;
+import com.xokker.PreferenceContext;
+import com.xokker.predictor.PreferencePredictor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,13 +21,13 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 21.04.2015
  */
-public class CeterisParibus<A> implements PreferencePredictor<A> {
+public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CeterisParibus.class);
+    private static final Logger logger = LoggerFactory.getLogger(CeterisParibusPredictor.class);
 
     private final PreferenceContext<A> context;
 
-    public CeterisParibus(PreferenceContext<A> context) {
+    public CeterisParibusPredictor(PreferenceContext<A> context) {
         this.context = context;
     }
 

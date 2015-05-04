@@ -94,6 +94,7 @@ public class BucketOrders {
         Set<Identifiable> center = Sets.newHashSet(pivot);
         Set<Identifiable> right = Sets.newHashSet();
         for (Identifiable item : items) {
+            // TODO: check correctness (left <-> right)
             double entry = pairOrderMatrix.getEntry(pivot.getId(), item.getId());
             if (entry < Half - Beta) {
                 left.add(item);
