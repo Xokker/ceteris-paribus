@@ -5,11 +5,15 @@ import com.xokker.datasets.Datasets;
 import com.xokker.datasets.cars.CarPreferencesFileReader;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
 public class BucketOrdersTest {
@@ -37,6 +41,24 @@ public class BucketOrdersTest {
         List<Set<Identifiable>> buckets = bucketOrders.bucketPivot();
 
         assertNotNull(buckets);
+        assertFalse(buckets.isEmpty());
+    }
+
+    @Ignore
+    @Test
+    public void testBucketPivot2() throws Exception {
+        BucketOrders bucketOrders = new BucketOrders(preferences.get(20));
+        List<Set<Identifiable>> buckets = bucketOrders.bucketPivot();
+
+        assertNotNull(buckets);
+
+        List<Identifiable> flat = buckets.stream().flatMap(Collection::stream).collect(toList());
+        List<Identifiable> expected = IntStream.of(0, 4, 7, 2, 5, 6, 9, 3, 1, 8)
+                .boxed()
+                .map(IntIdentifiable::ii)
+                .collect(toList());
+
+        assertEquals(expected, flat);
         assertFalse(buckets.isEmpty());
     }
 }

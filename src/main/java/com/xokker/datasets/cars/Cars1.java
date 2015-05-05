@@ -6,6 +6,7 @@ import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
 import com.xokker.predictor.impl.CeterisParibusPredictor;
+import com.xokker.predictor.impl.Support;
 import com.xokker.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,17 +91,17 @@ public class Cars1 {
             // if bucket index of the removed element is zero, it should be <= to everything else
             boolean after = removedElementBucketIndex == 0;
 
-            boolean ret;
+            Support ret;
             for (Set<Identifiable> bucket : buckets) {
                 if (bucket.equals(originalRandomBucket)) {
                     // elements in the same bucket must be incomparable
                     for (Identifiable id : randomBucket) {
                         ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
-                        if (ret) {
+                        if (ret != Support.EMPTY) {
                             penalty++;
                         }
                         ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
-                        if (ret) {
+                        if (ret != Support.EMPTY) {
                             penalty++;
                         }
                     }
@@ -108,11 +109,11 @@ public class Cars1 {
                 } else {
                     for (Identifiable id : bucket) {
                         ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
-                        if (after && ret || !after && !ret) { // element should go before any element of the current bucket
+                        if (after && (ret != Support.EMPTY) || !after && (ret == Support.EMPTY)) { // element should go before any element of the current bucket
                             penalty++;
                         }
                         ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
-                        if (!after && ret || after && !ret) { // element should go after any element of the current bucket
+                        if (!after && (ret != Support.EMPTY) || after && (ret == Support.EMPTY)) { // element should go after any element of the current bucket
                             penalty++;
                         }
                     }

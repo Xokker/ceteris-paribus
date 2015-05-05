@@ -1,5 +1,7 @@
 package com.xokker.predictor;
 
+import com.xokker.predictor.impl.Support;
+
 import java.util.Set;
 
 /**
@@ -13,6 +15,6 @@ public interface PreferencePredictor<A> {
      *          object with attributes a
      *         false otherwise
      */
-    boolean predictPreference(Set<A> a, Set<A> b);
+    Support predictPreference(Set<A> a, Set<A> b);
 
 }

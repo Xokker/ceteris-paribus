@@ -21,7 +21,7 @@ public class ZeroRulePredictor<A> implements PreferencePredictor<A> {
     }
 
     @Override
-    public boolean predictPreference(Set<A> a, Set<A> b) {
-        return positive;
+    public Support predictPreference(Set<A> a, Set<A> b) {
+        return Support.of(positive);
     }
 }

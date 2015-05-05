@@ -34,7 +34,7 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
     /**
      * Implementation of the Algorithm 1
      */
-    public boolean predictPreference(Set<A> a, Set<A> b) {
+    public Support predictPreference(Set<A> a, Set<A> b) {
         Set<Identifiable> allObjects = context.getAllObjects();
         Set<A> allAttributes = context.getAllAttributes();
         for (Identifiable g : allObjects) {
@@ -50,13 +50,13 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
                     );
                     if (checkPreference(d, f, e)) {
                         logger.debug("{} <{}= {}    for {} and {}", d, f, e, a, b);
-                        return true;
+                        return new Support(g, h);
                     }
                 }
             }
         }
 
-        return false;
+        return Support.EMPTY;
     }
 
     /**

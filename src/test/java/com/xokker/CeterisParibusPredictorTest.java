@@ -2,6 +2,7 @@ package com.xokker;
 
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.predictor.impl.CeterisParibusPredictor;
+import com.xokker.predictor.impl.Support;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +10,6 @@ import java.util.HashSet;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static com.xokker.Attributes.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CeterisParibusPredictorTest {
@@ -28,13 +28,13 @@ public class CeterisParibusPredictorTest {
 
     @Test
     public void testPredictPreference1() throws Exception {
-        boolean res = new CeterisParibusPredictor<>(preferenceContext).predictPreference(c6, c7);
-        assertTrue(res);
+        Support res = new CeterisParibusPredictor<>(preferenceContext).predictPreference(c6, c7);
+        assertTrue(res != Support.EMPTY);
     }
 
     @Test
     public void testPredictPreference2() throws Exception {
-        boolean res = new CeterisParibusPredictor<>(preferenceContext).predictPreference(c7, c6);
-        assertFalse(res);
+        Support res = new CeterisParibusPredictor<>(preferenceContext).predictPreference(c7, c6);
+        assertTrue(res == Support.EMPTY);
     }
 }
