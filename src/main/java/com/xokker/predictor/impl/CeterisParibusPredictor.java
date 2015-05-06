@@ -6,6 +6,7 @@ import com.xokker.predictor.PreferencePredictor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.*;
@@ -34,9 +35,11 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
     /**
      * Implementation of the Algorithm 1
      */
-    public Support predictPreference(Set<A> a, Set<A> b) {
+    @Override
+    public Set<Support> predictPreference(Set<A> a, Set<A> b) {
         Set<Identifiable> allObjects = context.getAllObjects();
         Set<A> allAttributes = context.getAllAttributes();
+        Set<Support> result = new HashSet<>();
         for (Identifiable g : allObjects) {
             Set<A> d = intersection(a, context.getObjectIntent(g));
             for (Identifiable h : difference(allObjects, singleton(g))) {
@@ -50,13 +53,13 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
                     );
                     if (checkPreference(d, f, e)) {
                         logger.debug("{} <{}= {}    for {} and {}", d, f, e, a, b);
-                        return new Support(g, h);
+                        result.add(new Support(g, h));
                     }
                 }
             }
         }
 
-        return Support.EMPTY;
+        return result;
     }
 
     /**

@@ -15,6 +15,6 @@ public interface PreferencePredictor<A> {
      *          object with attributes a
      *         false otherwise
      */
-    Support predictPreference(Set<A> a, Set<A> b);
+    Set<Support> predictPreference(Set<A> a, Set<A> b);
 
 }

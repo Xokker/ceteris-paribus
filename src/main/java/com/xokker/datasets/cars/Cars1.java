@@ -91,17 +91,17 @@ public class Cars1 {
             // if bucket index of the removed element is zero, it should be <= to everything else
             boolean after = removedElementBucketIndex == 0;
 
-            Support ret;
+            Set<Support> ret;
             for (Set<Identifiable> bucket : buckets) {
                 if (bucket.equals(originalRandomBucket)) {
                     // elements in the same bucket must be incomparable
                     for (Identifiable id : randomBucket) {
                         ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
-                        if (ret != Support.EMPTY) {
+                        if (!ret.isEmpty()) {
                             penalty++;
                         }
                         ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
-                        if (ret != Support.EMPTY) {
+                        if (!ret.isEmpty()) {
                             penalty++;
                         }
                     }
@@ -109,12 +109,14 @@ public class Cars1 {
                 } else {
                     for (Identifiable id : bucket) {
                         ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
-                        if (after && (ret != Support.EMPTY) || !after && (ret == Support.EMPTY)) { // element should go before any element of the current bucket
-                            penalty++;
-                        }
+                        int support1 = ret.size();
                         ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
-                        if (!after && (ret != Support.EMPTY) || after && (ret == Support.EMPTY)) { // element should go after any element of the current bucket
-                            penalty++;
+                        int support2 = ret.size();
+                        if (after && support1 > support2) {
+                            penalty += 2;
+                        }
+                        if (!after && support1 < support2) {
+                            penalty += 2;
                         }
                     }
                 }

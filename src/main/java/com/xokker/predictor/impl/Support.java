@@ -21,10 +21,6 @@ public class Support {
         this.g = g;
     }
 
-    public static Support of(boolean positive) {
-        return positive ? OK : EMPTY;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

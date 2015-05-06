@@ -4,6 +4,9 @@ import com.xokker.predictor.PreferencePredictor;
 
 import java.util.Set;
 
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+
 /**
  * @author Ernest Sadykov
  * @since 25.04.2015
@@ -21,7 +24,7 @@ public class ZeroRulePredictor<A> implements PreferencePredictor<A> {
     }
 
     @Override
-    public Support predictPreference(Set<A> a, Set<A> b) {
-        return Support.of(positive);
+    public Set<Support> predictPreference(Set<A> a, Set<A> b) {
+        return positive ? singleton(Support.OK) : emptySet();
     }
 }
