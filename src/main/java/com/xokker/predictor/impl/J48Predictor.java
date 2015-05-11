@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import com.xokker.Identifiable;
 import com.xokker.PreferenceContext;
 import com.xokker.predictor.PreferencePredictor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
@@ -22,6 +24,8 @@ import static java.util.Collections.singleton;
  */
 public class J48Predictor<A> implements PreferencePredictor<A> {
 
+    private static final Logger logger = LoggerFactory.getLogger(J48Predictor.class);
+
     private static final String NO = "no";
     private static final String YES = "yes";
 
@@ -36,11 +40,11 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
     /**
      * Constructs empty training dataset.
      */
-    public J48Predictor(PreferenceContext<A> context) throws Exception {
+    public J48Predictor(PreferenceContext<A> context) {
         // Create vector of attributes.
         FastVector attributes = new FastVector();
 
-        allAttributes = context.getAllAttributes();
+        allAttributes = context.getPossibleAttributes();
 
         // Add attributes for left and right objects in pair
         for (A attribute : allAttributes) {
@@ -68,18 +72,22 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
                         context.leq(left, right) ? "leq" : "not_leq");
             }
         }
-//        classifier.setOptions(new String[] {"-C", "0.5", "-M", "1"});
 
         // unpruned tree, min number of instances per leaf = 1:
-        classifier.setOptions(new String[] {"-U", "-M", "1"});
-        classifier.buildClassifier(data);
-        System.out.println(classifier);
+        try {
+            classifier.setOptions(new String[]{"-U", "-M", "1"});
+            classifier.buildClassifier(data);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        logger.debug("classifier: {}", classifier);
     }
 
     /**
      * Updates model using the given training message.
      */
-    public void updateData(Set<A> a, Set<A> b, String classValue) throws Exception {
+    public void updateData(Set<A> a, Set<A> b, String classValue) {
 
         // Make message into instance.
         Instance instance = makeInstance(a, b, data);
@@ -116,10 +124,6 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
-        // Output class value.
-        System.err.println("Message classified as : " +
-                data.classAttribute().value((int)predicted));
 
         return data.classAttribute().value((int)predicted);
     }

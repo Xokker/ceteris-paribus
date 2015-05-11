@@ -10,7 +10,7 @@ import java.util.List;
 public class Stats {
 
     private Integer userId;
-    private List<Integer> penalties;
+    private List<Double> penalties;
 
     public Stats(Integer userId) {
         this.userId = userId;
@@ -23,12 +23,12 @@ public class Stats {
 
     public double getAveragePenalty() {
         return penalties.stream()
-                .mapToInt(Integer::intValue)
+                .mapToDouble(Double::doubleValue)
                 .average()
                 .getAsDouble();
     }
 
-    public void addPenalty(int penalty) {
+    public void addPenalty(double penalty) {
         penalties.add(penalty);
     }
 
@@ -36,7 +36,7 @@ public class Stats {
         return userId;
     }
 
-    public List<Integer> getPenalties() {
+    public List<Double> getPenalties() {
         return penalties;
     }
 }

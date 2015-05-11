@@ -86,7 +86,7 @@ public class Cars1 {
             context.addObjects(mapWithoutKey(objects, removedElement));
             PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
 
-            int penalty = 0;
+            double penalty = 0;
 
             // if bucket index of the removed element is zero, it should be <= to everything else
             boolean after = removedElementBucketIndex == 0;
@@ -97,11 +97,11 @@ public class Cars1 {
                     for (Identifiable id : randomBucket) {
                         Set<Support> ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
                         if (!ret.isEmpty()) {
-                            penalty++;
+                            penalty += 0.5;
                         }
                         ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
                         if (!ret.isEmpty()) {
-                            penalty++;
+                            penalty += 0.5;
                         }
                     }
                     after = true;
@@ -112,12 +112,12 @@ public class Cars1 {
                         Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(id));
                         int support2 = ret2.size();
                         if (after && support1 > support2) {
-                            penalty += 2;
+                            penalty += 1;
                         }
                         if (!after && support1 < support2) {
-                            penalty += 2;
+                            penalty += 1;
                         }
-                        logger.info(support1 + " vs " + support2);
+                        logger.debug(support1 + " vs " + support2);
                     }
                 }
             }
