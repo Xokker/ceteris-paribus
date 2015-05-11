@@ -91,12 +91,11 @@ public class Cars1 {
             // if bucket index of the removed element is zero, it should be <= to everything else
             boolean after = removedElementBucketIndex == 0;
 
-            Set<Support> ret;
             for (Set<Identifiable> bucket : buckets) {
                 if (bucket.equals(originalRandomBucket)) {
                     // elements in the same bucket must be incomparable
                     for (Identifiable id : randomBucket) {
-                        ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
+                        Set<Support> ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
                         if (!ret.isEmpty()) {
                             penalty++;
                         }
@@ -108,16 +107,17 @@ public class Cars1 {
                     after = true;
                 } else {
                     for (Identifiable id : bucket) {
-                        ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
-                        int support1 = ret.size();
-                        ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
-                        int support2 = ret.size();
+                        Set<Support> ret1 = predictor.predictPreference(objects.get(id), objects.get(removedElement));
+                        int support1 = ret1.size();
+                        Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(id));
+                        int support2 = ret2.size();
                         if (after && support1 > support2) {
                             penalty += 2;
                         }
                         if (!after && support1 < support2) {
                             penalty += 2;
                         }
+                        logger.info(support1 + " vs " + support2);
                     }
                 }
             }
