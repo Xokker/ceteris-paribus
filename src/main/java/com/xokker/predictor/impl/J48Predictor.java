@@ -68,7 +68,12 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
                         context.leq(left, right) ? "leq" : "not_leq");
             }
         }
+//        classifier.setOptions(new String[] {"-C", "0.5", "-M", "1"});
+
+        // unpruned tree, min number of instances per leaf = 1:
+        classifier.setOptions(new String[] {"-U", "-M", "1"});
         classifier.buildClassifier(data);
+        System.out.println(classifier);
     }
 
     /**
@@ -103,12 +108,8 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
         // Make message into test instance.
         Instance instance = makeInstance(a, b, testset);
 
-        // Filter instance.
-//        filter.input(instance);
-//        Instance filteredInstance = filter.output();
-
         // Get index of predicted class value.
-        double predicted = 0;
+        double predicted;
         try {
             predicted = classifier.classifyInstance(instance);
         } catch (Exception e) {
