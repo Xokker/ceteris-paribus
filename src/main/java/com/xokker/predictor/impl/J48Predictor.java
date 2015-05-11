@@ -162,13 +162,6 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
         return instance;
     }
 
-    /**
-     * Main method.
-     */
-    public static void main(String[] options) {
-        // nop
-    }
-
     @Override
     public Set<Support> predictPreference(Set<A> a, Set<A> b) {
         return "leq".equals(classifyMessage(a, b)) ? singleton(Support.OK) : emptySet();
