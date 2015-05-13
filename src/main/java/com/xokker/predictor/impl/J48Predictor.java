@@ -69,7 +69,7 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
             for (Identifiable right : Sets.difference(context.getAllObjects(), singleton(left))) {
                 updateData(context.getObjectIntent(left),
                         context.getObjectIntent(right),
-                        context.leq(left, right) ? "leq" : "not_leq");
+                        context.leq(left, right) ? "leq" : "not_leq"); // TODO: continue in absence of info
             }
         }
 
@@ -82,6 +82,7 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
         }
 
         logger.debug("classifier: {}", classifier);
+        System.out.println(classifier);
     }
 
     /**

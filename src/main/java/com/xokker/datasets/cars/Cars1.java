@@ -106,10 +106,10 @@ public class Cars1 {
                     }
                     after = true;
                 } else {
-                    for (Identifiable id : bucket) {
-                        Set<Support> ret1 = predictor.predictPreference(objects.get(id), objects.get(removedElement));
+                    for (Identifiable current : bucket) {
+                        Set<Support> ret1 = predictor.predictPreference(objects.get(current), objects.get(removedElement));
                         int support1 = ret1.size();
-                        Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(id));
+                        Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(current));
                         int support2 = ret2.size();
                         if (after && support1 > support2) {
                             penalty += 1;
