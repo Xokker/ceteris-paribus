@@ -13,8 +13,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.xokker.IntIdentifiable.ii;
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class PreferenceGraphTest {
 
@@ -29,10 +28,10 @@ public class PreferenceGraphTest {
                         .collect(toList())
         );
 
-        assertTrue(graph.leq(ii(10 - 1), ii(3 - 1)));
-        assertTrue(graph.leq(ii(6 - 1), ii(7 - 1)));
-        assertTrue(graph.leq(ii(8 - 1), ii(4 - 1)));
-        assertTrue(graph.leq(ii(2 - 1), ii(1 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(10 - 1), ii(3 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(6 - 1), ii(7 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(8 - 1), ii(4 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(2 - 1), ii(1 - 1)));
     }
 
     @Test
@@ -49,14 +48,15 @@ public class PreferenceGraphTest {
         );
         PreferenceGraph.initBucketOrder(graph, buckets);
 
-        assertTrue(graph.leq(ii(10 - 1), ii(3 - 1)));
-        assertTrue(graph.leq(ii(6 - 1), ii(7 - 1)));
-        assertTrue(graph.leq(ii(8 - 1), ii(4 - 1)));
-        assertTrue(graph.leq(ii(2 - 1), ii(1 - 1)));
-        assertTrue(graph.leq(ii(5 - 1), ii(5 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(10 - 1), ii(3 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(6 - 1), ii(7 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(8 - 1), ii(4 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(2 - 1), ii(1 - 1)));
+        assertEquals(PrefState.Leq, graph.leq(ii(5 - 1), ii(5 - 1)));
 
-        assertFalse(graph.leq(ii(9 - 1), ii(1 - 1)));
-        assertFalse(graph.leq(ii(5 - 1), ii(1 - 1)));
-        assertFalse(graph.leq(ii(7 - 1), ii(10 - 1)));
+        // TODO: figure it out:
+        assertEquals(PrefState.Unknown, graph.leq(ii(9 - 1), ii(1 - 1)));
+        assertEquals(PrefState.Unknown, graph.leq(ii(5 - 1), ii(1 - 1)));
+        assertEquals(PrefState.Unknown, graph.leq(ii(7 - 1), ii(10 - 1)));
     }
 }

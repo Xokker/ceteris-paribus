@@ -3,6 +3,7 @@ package com.xokker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 
 import java.util.Collection;
@@ -75,7 +76,7 @@ public class PreferenceContext<A> {
     /**
      * Checks whether the left object is at least as good as right object
      */
-    public boolean leq(Identifiable left, Identifiable right) {
+    public PrefState leq(Identifiable left, Identifiable right) {
         return preferenceGraph.leq(left, right);
     }
 

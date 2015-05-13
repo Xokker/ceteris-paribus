@@ -1,7 +1,9 @@
 package com.xokker.graph;
 
 import com.xokker.Identifiable;
+import com.xokker.PrefEntry;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +16,7 @@ public interface PreferenceGraph {
     /**
      * Checks whether the left object is at least as good as right object
      */
-    boolean leq(Identifiable left, Identifiable right);
+    PrefState leq(Identifiable left, Identifiable right);
 
     /**
      * Asserts that the right object is at least as good as left object
@@ -45,4 +47,7 @@ public interface PreferenceGraph {
         }
     }
 
+    static void init(PreferenceGraph graph, Collection<PrefEntry> preferences) {
+
+    }
 }

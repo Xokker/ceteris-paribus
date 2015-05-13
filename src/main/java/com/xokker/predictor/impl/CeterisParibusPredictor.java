@@ -2,6 +2,7 @@ package com.xokker.predictor.impl;
 
 import com.xokker.Identifiable;
 import com.xokker.PreferenceContext;
+import com.xokker.graph.PrefState;
 import com.xokker.predictor.PreferencePredictor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
         for (Identifiable g : allObjects) {
             Set<A> d = intersection(a, context.getObjectIntent(g));
             for (Identifiable h : difference(allObjects, singleton(g))) {
-                if (context.leq(g, h)) {
+                if (context.leq(g, h) == PrefState.Leq) {
                     Set<A> hIntent = context.getObjectIntent(h);
                     Set<A> gIntent = context.getObjectIntent(g);
                     Set<A> e = intersection(b, hIntent);
@@ -72,7 +73,7 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
             for (Identifiable h : y) {
                 Set<A> gIntent = context.getObjectIntent(g);
                 Set<A> hIntent = context.getObjectIntent(h);
-                if (!context.leq(g, h) && intersection(gIntent, f).equals(intersection(hIntent, f))) {
+                if (context.leq(g, h) != PrefState.Leq && intersection(gIntent, f).equals(intersection(hIntent, f))) {
                     return false;
                 }
             }

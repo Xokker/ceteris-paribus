@@ -3,6 +3,7 @@ package com.xokker.predictor.impl;
 import com.google.common.collect.Sets;
 import com.xokker.Identifiable;
 import com.xokker.PreferenceContext;
+import com.xokker.graph.PrefState;
 import com.xokker.predictor.PreferencePredictor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +58,8 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
 
         // Add class attribute.
         FastVector classValues = new FastVector(2);
-        classValues.addElement("leq");
-        classValues.addElement("not_leq");
+        classValues.addElement(PrefState.Leq.name());
+        classValues.addElement(PrefState.NotLeq.name());
         attributes.addElement(new Attribute("Class", classValues));
 
         // Create dataset with initial capacity of 100, and set index of class.
@@ -67,9 +68,12 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
 
         for (Identifiable left : context.getAllObjects()) {
             for (Identifiable right : Sets.difference(context.getAllObjects(), singleton(left))) {
-                updateData(context.getObjectIntent(left),
-                        context.getObjectIntent(right),
-                        context.leq(left, right) ? "leq" : "not_leq"); // TODO: continue in absence of info
+                PrefState state = context.leq(left, right);
+                if (state != PrefState.Unknown) {
+                    updateData(context.getObjectIntent(left),
+                            context.getObjectIntent(right),
+                            state.name());
+                }
             }
         }
 
@@ -165,6 +169,6 @@ public class J48Predictor<A> implements PreferencePredictor<A> {
 
     @Override
     public Set<Support> predictPreference(Set<A> a, Set<A> b) {
-        return "leq".equals(classifyMessage(a, b)) ? singleton(Support.OK) : emptySet();
+        return PrefState.Leq.name().equals(classifyMessage(a, b)) ? singleton(Support.OK) : emptySet();
     }
 }
