@@ -24,9 +24,9 @@ import static java.util.stream.Collectors.toSet;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class Cars1 {
+public class CarsWithBucketOrders {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cars1.class);
+    private static final Logger logger = LoggerFactory.getLogger(CarsWithBucketOrders.class);
 
     private Random random = new Random();
 
@@ -168,8 +168,8 @@ public class Cars1 {
     }
 
     public static void main(String[] args) throws IOException {
-        Cars1 cars1 = new Cars1();
-        Collection<Stats> stats = cars1.crossValidation(CeterisParibusPredictor::new).values();
+        CarsWithBucketOrders carsWithBucketOrders = new CarsWithBucketOrders();
+        Collection<Stats> stats = carsWithBucketOrders.crossValidation(CeterisParibusPredictor::new).values();
         DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
         logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
                 format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));
