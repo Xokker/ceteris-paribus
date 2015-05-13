@@ -86,4 +86,8 @@ public class PreferenceContext<A> {
     public Set<A> getAllAttributes() {
         return new HashSet<>(attributesToObjects.keySet());
     }
+
+    public Set<A> getPossibleAttributes() {
+        return possibleAttributes;
+    }
 }

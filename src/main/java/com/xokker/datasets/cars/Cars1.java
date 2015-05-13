@@ -86,38 +86,38 @@ public class Cars1 {
             context.addObjects(mapWithoutKey(objects, removedElement));
             PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
 
-            int penalty = 0;
+            double penalty = 0;
 
             // if bucket index of the removed element is zero, it should be <= to everything else
             boolean after = removedElementBucketIndex == 0;
 
-            Set<Support> ret;
             for (Set<Identifiable> bucket : buckets) {
                 if (bucket.equals(originalRandomBucket)) {
                     // elements in the same bucket must be incomparable
                     for (Identifiable id : randomBucket) {
-                        ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
+                        Set<Support> ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
                         if (!ret.isEmpty()) {
-                            penalty++;
+                            penalty += 0.5;
                         }
                         ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
                         if (!ret.isEmpty()) {
-                            penalty++;
+                            penalty += 0.5;
                         }
                     }
                     after = true;
                 } else {
-                    for (Identifiable id : bucket) {
-                        ret = predictor.predictPreference(objects.get(id), objects.get(removedElement));
-                        int support1 = ret.size();
-                        ret = predictor.predictPreference(objects.get(removedElement), objects.get(id));
-                        int support2 = ret.size();
+                    for (Identifiable current : bucket) {
+                        Set<Support> ret1 = predictor.predictPreference(objects.get(current), objects.get(removedElement));
+                        int support1 = ret1.size();
+                        Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(current));
+                        int support2 = ret2.size();
                         if (after && support1 > support2) {
-                            penalty += 2;
+                            penalty += 1;
                         }
                         if (!after && support1 < support2) {
-                            penalty += 2;
+                            penalty += 1;
                         }
+                        logger.debug(support1 + " vs " + support2);
                     }
                 }
             }

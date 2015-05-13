@@ -1,8 +1,8 @@
-package com.xokker;
+package com.xokker.predictor.impl;
 
+import com.xokker.ContextUtils;
+import com.xokker.PreferenceContext;
 import com.xokker.graph.PreferenceGraph;
-import com.xokker.predictor.impl.CeterisParibusPredictor;
-import com.xokker.predictor.impl.Support;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 public class CeterisParibusPredictorTest {
 
-    private HashSet<String> allAttrs = newHashSet(Minivan, SUV, RedExterior, WhiteExterior, BrightInterior, DarkInterior);
     private PreferenceContext<String> preferenceContext;
     private HashSet<String> c6 = newHashSet(SUV, RedExterior, BrightInterior);
     private HashSet<String> c7 = newHashSet(Minivan, RedExterior, BrightInterior);
@@ -24,7 +23,7 @@ public class CeterisParibusPredictorTest {
     @Before
     public void setUp() throws Exception {
         PreferenceGraph preferenceGraph = ContextUtils.createPreferenceGraph();
-        preferenceContext = new PreferenceContext<>(allAttrs, preferenceGraph);
+        preferenceContext = new PreferenceContext<>(AllAttrs, preferenceGraph);
         ContextUtils.addObjects(preferenceContext);
     }
 
