@@ -16,12 +16,12 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class PreferenceGraphUtilsTest {
+public class PreferenceGraphTest {
 
     @Test
     public void testInitLinearOrder() throws Exception {
         PreferenceGraph graph = new ArrayPreferenceGraph(10);
-        PreferenceGraphUtils.initLinearOrder(
+        PreferenceGraph.initLinearOrder(
                 graph,
                 Stream.of(8, 6, 7, 10, 2, 9, 5, 1, 3, 4)
                         .map(i -> i - 1)
@@ -47,7 +47,7 @@ public class PreferenceGraphUtilsTest {
                 newHashSet(ii(9 - 1), ii(5 - 1), ii(1 - 1)),
                 newHashSet(ii(3 - 1), ii(4 - 1))
         );
-        PreferenceGraphUtils.initBucketOrder(graph, buckets);
+        PreferenceGraph.initBucketOrder(graph, buckets);
 
         assertTrue(graph.leq(ii(10 - 1), ii(3 - 1)));
         assertTrue(graph.leq(ii(6 - 1), ii(7 - 1)));

@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 import static com.xokker.datasets.Datasets.Cars1;
 import static com.xokker.datasets.cars.CarPreferencesFileReader.*;
-import static com.xokker.graph.PreferenceGraphUtils.initBucketOrder;
+import static com.xokker.graph.PreferenceGraph.initBucketOrder;
 import static java.util.stream.Collectors.toSet;
 
 /**
