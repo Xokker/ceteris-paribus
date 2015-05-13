@@ -53,7 +53,7 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
                             difference(allAttributes, symmetricDifference(gIntent, hIntent))
                     );
                     if (checkPreference(d, f, e)) {
-                        logger.debug("{} <{}= {}    for {} and {}", d, f, e, a, b);
+                        logger.trace("{} <{}= {}    for {} and {}", d, f, e, a, b);
                         result.add(new Support(g, h));
                     }
                 }

@@ -48,6 +48,8 @@ public interface PreferenceGraph {
     }
 
     static void init(PreferenceGraph graph, Collection<PrefEntry> preferences) {
-
+        for (PrefEntry preference : preferences) {
+            graph.setLeq(preference.id2, preference.id1);
+        }
     }
 }
