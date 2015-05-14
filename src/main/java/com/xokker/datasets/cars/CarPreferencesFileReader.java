@@ -13,6 +13,7 @@ import java.util.*;
 
 import static com.xokker.IntIdentifiable.ii;
 import static java.lang.Integer.parseInt;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -44,26 +45,30 @@ public class CarPreferencesFileReader {
 
     public static Map<Identifiable, Set<CarAttribute>> readItems(String pathToFile) throws IOException {
         List<String> lines = readLines(pathToFile);
-        Map<Integer, String> headers = new HashMap<>();
-        String[] splittedHeaders = lines.get(0).split(",");
-        for (int i = 0; i < splittedHeaders.length; i++) {
-            headers.put(i, splittedHeaders[i].trim());
-        }
+        String[] headers = getHeaders(lines.get(0));
 
-        Map<Identifiable, Set<CarAttribute>> result = new HashMap<>();
-        lines.stream()
+        return lines.stream()
                 .skip(1)
                 .map(s -> s.split(","))
-                .forEach(ar -> {
-                    int id = Integer.parseInt(ar[0]);
-                    Set<CarAttribute> attrs = EnumSet.noneOf(CarAttribute.class);
-                    for (int i = 1; i < ar.length; i++) {
-                        attrs.add(CarAttribute.get(headers.get(i), ar[i]));
-                    }
-                    result.put(ii(id - 1), attrs);
-                });
+                .collect(toMap(
+                        ar -> ii(parseInt(ar[0]) - 1),
+                        ar -> {
+                            Set<CarAttribute> attrs = EnumSet.noneOf(CarAttribute.class);
+                            for (int i = 1; i < ar.length; i++) {
+                                attrs.add(CarAttribute.get(headers[i], ar[i]));
+                            }
+                            return attrs;
+                        }));
+    }
 
-        return result;
+    private static String[] getHeaders(String headerLine) {
+        String[] splittedHeaders = headerLine.split(",");
+        int noOfHeaders = splittedHeaders.length;
+        String[] headers = new String[noOfHeaders];
+        for (int i = 0; i < noOfHeaders; i++) {
+            headers[i] = splittedHeaders[i].trim();
+        }
+        return headers;
     }
 
     public static Set<Integer> readUsers(String pathToFile) throws IOException {
