@@ -16,9 +16,9 @@ public class Support {
     public final Identifiable g;
     public final Identifiable h;
 
-    public Support(Identifiable h, Identifiable g) {
-        this.h = h;
+    public Support(Identifiable g, Identifiable h) {
         this.g = g;
+        this.h = h;
     }
 
     @Override
