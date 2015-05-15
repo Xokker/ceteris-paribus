@@ -68,6 +68,7 @@ public class CarPreferencesFileReader {
         for (int i = 0; i < noOfHeaders; i++) {
             headers[i] = splittedHeaders[i].trim();
         }
+
         return headers;
     }
 

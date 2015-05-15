@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.*;
@@ -61,6 +62,96 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
         }
 
         return result;
+    }
+
+    /**
+     * TODO: optimize
+     */
+    public Set<Support> fixed(Set<A> a, Set<A> b, CeterisParibusPreference<A> fixed) {
+        Set<Identifiable> allObjects = context.getAllObjects();
+        Set<A> allAttributes = context.getAllAttributes();
+        Set<Support> result = new HashSet<>();
+        for (Identifiable g : allObjects) {
+            Set<A> d = intersection(a, context.getObjectIntent(g));
+
+//            if (d.equals(fixed.getD())) {
+            if (intersection(d, fixed.getD()).size() == d.size()) {
+                for (Identifiable h : difference(allObjects, singleton(g))) {
+                    if (context.leq(g, h) == PrefState.Leq) {
+                        Set<A> hIntent = context.getObjectIntent(h);
+                        Set<A> gIntent = context.getObjectIntent(g);
+                        Set<A> e = intersection(b, hIntent);
+                        Set<A> f = intersection(
+                                difference(allAttributes, symmetricDifference(a, b)),
+                                difference(allAttributes, symmetricDifference(gIntent, hIntent))
+                        );
+//                        if (f.equals(fixed.getF()) && e.equals(fixed.getE())) {
+                        if (intersection(f, fixed.getF()).size() == f.size() && intersection(e, fixed.getE()).size() == e.size()) {
+                            if (checkPreference(d, f, e)) {
+                                logger.trace("{} <{}= {}    for {} and {}", d, f, e, a, b);
+                                result.add(new Support(g, h));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private Set<CeterisParibusPreference<A>> findAll(Set<A> a, Set<A> b) {
+        Set<Identifiable> allObjects = context.getAllObjects();
+        Set<A> allAttributes = context.getAllAttributes();
+        Set<CeterisParibusPreference<A>> result = new HashSet<>();
+        for (Identifiable g : allObjects) {
+            Set<A> d = intersection(a, context.getObjectIntent(g));
+            for (Identifiable h : difference(allObjects, singleton(g))) {
+                if (context.leq(g, h) == PrefState.Leq) {
+                    Set<A> hIntent = context.getObjectIntent(h);
+                    Set<A> gIntent = context.getObjectIntent(g);
+                    Set<A> e = intersection(b, hIntent);
+                    Set<A> f = intersection(
+                            difference(allAttributes, symmetricDifference(a, b)),
+                            difference(allAttributes, symmetricDifference(gIntent, hIntent))
+                    );
+                    if (checkPreference(d, f, e)) {
+                        logger.trace("{} <{}= {}    for {} and {}", d, f, e, a, b);
+                        result.add(new CeterisParibusPreference<>(d, f, e));
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Positive number if the first is better than the second.
+     */
+    @Override
+    public int predict(Set<A> first, Set<A> second) {
+        Set<CeterisParibusPreference<A>> allLeftRight = findAll(first, second);
+        Set<CeterisParibusPreference<A>> allRightLeft = findAll(second, first);
+
+        int maxLeftRight = -1;
+        int maxRightLeft = -1;
+
+        Iterator<CeterisParibusPreference<A>> iterator = allRightLeft.iterator();
+        for (CeterisParibusPreference<A> fixed : allLeftRight) {
+            int leftRight = fixed(first, second, fixed).size();
+            if (leftRight > maxLeftRight) {
+                maxLeftRight = leftRight;
+                while (maxLeftRight >= maxRightLeft && iterator.hasNext()) {
+                    int rightLeft = fixed(second, first, iterator.next()).size();
+                    if (rightLeft > maxRightLeft) {
+                        maxRightLeft = rightLeft;
+                    }
+                }
+            }
+        }
+
+        return maxRightLeft - maxLeftRight;
     }
 
     /**

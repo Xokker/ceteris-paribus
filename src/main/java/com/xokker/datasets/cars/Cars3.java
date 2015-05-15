@@ -10,7 +10,6 @@ import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
 import com.xokker.predictor.impl.CeterisParibusPredictor;
-import com.xokker.predictor.impl.Support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +27,9 @@ import static java.util.stream.Collectors.toSet;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class Cars2 {
+public class Cars3 {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cars2.class);
+    private static final Logger logger = LoggerFactory.getLogger(Cars3.class);
 
     /**
      * @return key - user
@@ -90,17 +89,21 @@ public class Cars2 {
             double penalty = 0;
 
             for (Identifiable current : objects.keySet()) {
-                Set<Support> ret1 = predictor.predictPreference(objects.get(current), objects.get(removedElement));
-                int support1 = ret1.size();
-                Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(current));
-                int support2 = ret2.size();
-                if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && support1 > support2) {
+                if (current.equals(removedElement)) {
+                    continue;
+                }
+                int comparison = predictor.predict(objects.get(current), objects.get(removedElement));
+
+                if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && comparison < 0) {
                     penalty += 1;
                 }
-                if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && support1 < support2) {
+                if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && comparison > 0) {
                     penalty += 1;
                 }
-                logger.info("{} vs {} for elements {} and {}", support1, support2, removedElement, current);
+//                if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && comparison == 0) {
+//                    penalty += 1;
+//                }
+                logger.info("comp: {} for elements {} and {}", comparison, removedElement, current);
             }
 
             result.addPenalty(penalty);
@@ -123,7 +126,7 @@ public class Cars2 {
     }
 
     public static void main(String[] args) throws IOException {
-        Cars2 cars2 = new Cars2();
+        Cars3 cars2 = new Cars3();
         Collection<Stats> stats = cars2.crossValidation(CeterisParibusPredictor::new).values();
         DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
         logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
