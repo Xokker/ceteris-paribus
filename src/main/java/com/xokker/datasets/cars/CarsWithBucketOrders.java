@@ -45,7 +45,7 @@ public class CarsWithBucketOrders {
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
         Map<Integer, Stats> result = new HashMap<>(users.size());
-        for (Integer user : users) {
+        for (Integer user : Collections.singleton(54)) {
             logger.info("user {}:", user);
             Stats stats = crossValidation(objects, preferences.get(user), predictorCreator);
             logger.info("avg penalty for user #{} is {}", user, stats.getAveragePenalty());

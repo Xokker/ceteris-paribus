@@ -46,6 +46,7 @@ public class Cars3 {
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
         Map<Integer, Stats> result = new HashMap<>(users.size());
+//        for (Integer user : Collections.singleton(54)) {
         for (Integer user : users) {
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);

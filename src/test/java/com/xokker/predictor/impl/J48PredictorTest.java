@@ -22,7 +22,7 @@ public class J48PredictorTest {
         PreferenceContext<String> prefContext = new PreferenceContext<>(Attributes.AllAttrs, ContextUtils.createPreferenceGraph());
         ContextUtils.addObjects(prefContext);
 
-        J48Predictor<String> predictor = new J48Predictor<>(prefContext);
+        WekaPredictor<String> predictor = new J48Predictor<>(prefContext);
         Set<Support> res = predictor.predictPreference(c6, c7);
         assertFalse(res.isEmpty());
     }
@@ -32,7 +32,7 @@ public class J48PredictorTest {
         PreferenceContext<String> prefContext = new PreferenceContext<>(Attributes.AllAttrs, ContextUtils.createPreferenceGraph());
         ContextUtils.addObjects(prefContext);
 
-        J48Predictor<String> predictor = new J48Predictor<>(prefContext);
+        WekaPredictor<String> predictor = new J48Predictor<>(prefContext);
         Set<Support> res = predictor.predictPreference(c7, c6);
         assertTrue(res.isEmpty());
     }

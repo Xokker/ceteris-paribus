@@ -72,21 +72,21 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
         Set<A> allAttributes = context.getAllAttributes();
         Set<Support> result = new HashSet<>();
         for (Identifiable g : allObjects) {
-            Set<A> d = intersection(a, context.getObjectIntent(g));
+            Set<A> d = context.getObjectIntent(g);
 
 //            if (d.equals(fixed.getD())) {
-            if (intersection(d, fixed.getD()).size() == d.size()) {
+            if (intersection(d, fixed.getD()).size() == fixed.getD().size()) {
                 for (Identifiable h : difference(allObjects, singleton(g))) {
                     if (context.leq(g, h) == PrefState.Leq) {
                         Set<A> hIntent = context.getObjectIntent(h);
                         Set<A> gIntent = context.getObjectIntent(g);
-                        Set<A> e = intersection(b, hIntent);
+                        Set<A> e = hIntent;
                         Set<A> f = intersection(
                                 difference(allAttributes, symmetricDifference(a, b)),
                                 difference(allAttributes, symmetricDifference(gIntent, hIntent))
                         );
 //                        if (f.equals(fixed.getF()) && e.equals(fixed.getE())) {
-                        if (intersection(f, fixed.getF()).size() == f.size() && intersection(e, fixed.getE()).size() == e.size()) {
+                        if (f.equals(fixed.getF()) && intersection(e, fixed.getE()).size() == fixed.getE().size()) {
                             if (checkPreference(d, f, e)) {
                                 logger.trace("{} <{}= {}    for {} and {}", d, f, e, a, b);
                                 result.add(new Support(g, h));
@@ -134,18 +134,25 @@ public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
         Set<CeterisParibusPreference<A>> allLeftRight = findAll(first, second);
         Set<CeterisParibusPreference<A>> allRightLeft = findAll(second, first);
 
-        int maxLeftRight = -1;
-        int maxRightLeft = -1;
+        int maxLeftRight = 0;
+        int maxRightLeft = 0;
+
+        Set<Support> fixedlr_max = null;
+        Set<Support> fixedrl_max = null;
 
         Iterator<CeterisParibusPreference<A>> iterator = allRightLeft.iterator();
         for (CeterisParibusPreference<A> fixed : allLeftRight) {
-            int leftRight = fixed(first, second, fixed).size();
+            Set<Support> fixedlr = fixed(first, second, fixed);
+            int leftRight = fixedlr.size();
             if (leftRight > maxLeftRight) {
                 maxLeftRight = leftRight;
+                fixedlr_max = fixedlr;
                 while (maxLeftRight >= maxRightLeft && iterator.hasNext()) {
-                    int rightLeft = fixed(second, first, iterator.next()).size();
+                    Set<Support> fixedrl = fixed(second, first, iterator.next());
+                    int rightLeft = fixedrl.size();
                     if (rightLeft > maxRightLeft) {
                         maxRightLeft = rightLeft;
+                        fixedrl_max = fixedrl;
                     }
                 }
             }
