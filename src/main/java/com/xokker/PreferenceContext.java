@@ -7,10 +7,7 @@ import com.xokker.datasets.Attribute;
 import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Collections.singleton;
 
@@ -86,7 +83,8 @@ public class PreferenceContext<A extends Attribute> {
     }
 
     public Set<A> getAllAttributes() {
-        return new HashSet<>(attributesToObjects.keySet());
+//        return new HashSet<>(attributesToObjects.keySet());
+        return Collections.unmodifiableSet(getPossibleAttributes());
     }
 
     public Set<A> getPossibleAttributes() {

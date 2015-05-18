@@ -13,6 +13,7 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
@@ -35,7 +36,7 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
     /* The actual classifier. */
     private Classifier classifier = createClassifier();
 
-    protected Set<A> allAttributes;
+    private PreferenceContext<A> context;
 
     protected abstract Classifier createClassifier();
 
@@ -45,8 +46,10 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
      * Constructs empty training dataset.
      */
     public WekaPredictor(PreferenceContext<A> context) {
-        allAttributes = context.getPossibleAttributes();
+        this.context = context;
+    }
 
+    public void init() {
         // Create vector of attributes.
         data = createData(context);
         data.setClassIndex(data.numAttributes() - 1);
@@ -70,15 +73,14 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
             throw new RuntimeException(e);
         }
 
-        logger.debug("classifier: {}", classifier);
-        System.out.println(classifier);
+        logger.info("classifier: {}", classifier);
     }
 
     protected Instances createData(PreferenceContext<A> context) {
         FastVector attributes = new FastVector();
 
         // Add attributes for left and right objects in pair
-        for (A attribute : allAttributes) {
+        for (A attribute : getAllAttributes()) {
             FastVector values = new FastVector(2);
             values.addElement(YES);
             values.addElement(NO);
@@ -149,7 +151,7 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
     protected Instance makeInstance(Set<A> leftAttributes, Set<A> rightAttributes, Instances data) {
 
         // Create instance of length two.
-        Instance instance = new Instance(allAttributes.size() * 2 + 1);
+        Instance instance = new Instance(getAllAttributes().size() * 2 + 1);
         instance.setDataset(data);
 
         for (A attribute : leftAttributes) {
@@ -160,7 +162,7 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
             Attribute att = data.attribute(attribute.toString() + "_r");
             instance.setValue(att.index(), YES);
         }
-        for (A attribute : allAttributes) {
+        for (A attribute : getAllAttributes()) {
             if (!leftAttributes.contains(attribute)) {
                 Attribute att = data.attribute(attribute.toString() + "_l");
                 instance.setValue(att.index(), NO);
@@ -180,5 +182,9 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
     @Override
     public Set<Support> predictPreference(Set<A> a, Set<A> b) {
         return PrefState.Leq.name().equals(classifyMessage(a, b)) ? singleton(Support.OK) : emptySet();
+    }
+
+    protected Set<A> getAllAttributes() {
+        return Collections.unmodifiableSet(context.getAllAttributes());
     }
 }

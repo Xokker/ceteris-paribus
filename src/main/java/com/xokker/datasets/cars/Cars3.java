@@ -86,6 +86,7 @@ public class Cars3 {
 
             context.addObjects(mapWithoutKey(objects, removedElement));
             PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
+            predictor.init();
 
             double penalty = 0;
 

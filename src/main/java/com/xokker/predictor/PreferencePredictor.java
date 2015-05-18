@@ -18,6 +18,10 @@ public interface PreferencePredictor<A extends Attribute> {
      */
     Set<Support> predictPreference(Set<A> a, Set<A> b);
 
+    default void init() {
+        // nop
+    }
+
     /**
      * Positive number if the first is better than the second.
      */

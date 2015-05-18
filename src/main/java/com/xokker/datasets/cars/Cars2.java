@@ -87,6 +87,7 @@ public class Cars2 {
 
             context.addObjects(mapWithoutKey(objects, removedElement));
             PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
+            predictor.init();
 
             double penalty = 0;
 
@@ -127,6 +128,7 @@ public class Cars2 {
         Cars2 cars2 = new Cars2();
         Collection<Stats> stats = cars2.crossValidation((context) -> new J48Predictor<>(context, true)).values();
         DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
+        logger.info("J48Predictor<>(context, true)");
         logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
                 format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));
     }

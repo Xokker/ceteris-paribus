@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.xokker.PreferenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
@@ -22,6 +24,8 @@ import static java.util.stream.Collectors.toMap;
  * @since 17.05.2015
  */
 public class J48Predictor<A extends com.xokker.datasets.Attribute> extends WekaPredictor<A> {
+
+    private static final Logger logger = LoggerFactory.getLogger(J48Predictor.class);
 
     private final boolean usePairedNodes;
 
@@ -46,9 +50,9 @@ public class J48Predictor<A extends com.xokker.datasets.Attribute> extends WekaP
 
     @Override
     protected Instances createData(PreferenceContext<A> context) {
-//        if (!usePairedNodes) {
-//            return super.createData(context);
-//        }
+        if (!usePairedNodes) {
+            return super.createData(context);
+        }
 
         FastVector attributes = new FastVector();
 
@@ -71,18 +75,18 @@ public class J48Predictor<A extends com.xokker.datasets.Attribute> extends WekaP
     }
 
     private String createPair(A i, A j) {
-        return i.toString() + ":" + j.toString();
+        return i.toString() + "-" + j.toString();
     }
 
     private ImmutableListMultimap<String, A> groupedAttributes() {
-        return Multimaps.index(allAttributes, com.xokker.datasets.Attribute::getCategory);
+        return Multimaps.index(getAllAttributes(), com.xokker.datasets.Attribute::getCategory);
     }
 
     @Override
     protected Instance makeInstance(Set<A> leftAttributes, Set<A> rightAttributes, Instances data) {
-//        if (!usePairedNodes) {
-//            return super.makeInstance(leftAttributes, rightAttributes, data);
-//        }
+        if (!usePairedNodes) {
+            return super.makeInstance(leftAttributes, rightAttributes, data);
+        }
 
         Multimap<String, A> grouped = groupedAttributes();
 
