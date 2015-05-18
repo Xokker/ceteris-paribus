@@ -2,6 +2,7 @@ package com.xokker.predictor.impl;
 
 import com.xokker.Identifiable;
 import com.xokker.PreferenceContext;
+import com.xokker.datasets.Attribute;
 import com.xokker.graph.PrefState;
 import com.xokker.predictor.PreferencePredictor;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 21.04.2015
  */
-public class CeterisParibusPredictor<A> implements PreferencePredictor<A> {
+public class CeterisParibusPredictor<A extends Attribute> implements PreferencePredictor<A> {
 
     private static final Logger logger = LoggerFactory.getLogger(CeterisParibusPredictor.class);
 

@@ -22,12 +22,12 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 11.05.2015
  */
-public abstract class WekaPredictor<A> implements PreferencePredictor<A> {
+public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> implements PreferencePredictor<A> {
 
     private static final Logger logger = LoggerFactory.getLogger(WekaPredictor.class);
 
-    private static final String NO = "no";
-    private static final String YES = "yes";
+    public static final String NO = "no";
+    public static final String YES = "yes";
 
     /* The training data gathered so far. */
     private Instances data = null;
@@ -35,38 +35,20 @@ public abstract class WekaPredictor<A> implements PreferencePredictor<A> {
     /* The actual classifier. */
     private Classifier classifier = createClassifier();
 
+    protected Set<A> allAttributes;
+
     protected abstract Classifier createClassifier();
 
     protected abstract String[] getOptions();
-
-    private Set<A> allAttributes;
 
     /**
      * Constructs empty training dataset.
      */
     public WekaPredictor(PreferenceContext<A> context) {
-        // Create vector of attributes.
-        FastVector attributes = new FastVector();
-
         allAttributes = context.getPossibleAttributes();
 
-        // Add attributes for left and right objects in pair
-        for (A attribute : allAttributes) {
-            FastVector values = new FastVector(2);
-            values.addElement(YES);
-            values.addElement(NO);
-            attributes.addElement(new Attribute(attribute.toString() + "_l", values));
-            attributes.addElement(new Attribute(attribute.toString() + "_r", values));
-        }
-
-        // Add class attribute.
-        FastVector classValues = new FastVector(2);
-        classValues.addElement(PrefState.Leq.name());
-        classValues.addElement(PrefState.NotLeq.name());
-        attributes.addElement(new Attribute("Class", classValues));
-
-        // Create dataset with initial capacity of 100, and set index of class.
-        data = new Instances("datasetName", attributes, 100);
+        // Create vector of attributes.
+        data = createData(context);
         data.setClassIndex(data.numAttributes() - 1);
 
         for (Identifiable left : context.getAllObjects()) {
@@ -90,6 +72,30 @@ public abstract class WekaPredictor<A> implements PreferencePredictor<A> {
 
         logger.debug("classifier: {}", classifier);
         System.out.println(classifier);
+    }
+
+    protected Instances createData(PreferenceContext<A> context) {
+        FastVector attributes = new FastVector();
+
+        // Add attributes for left and right objects in pair
+        for (A attribute : allAttributes) {
+            FastVector values = new FastVector(2);
+            values.addElement(YES);
+            values.addElement(NO);
+            attributes.addElement(new Attribute(attribute.toString() + "_l", values));
+            attributes.addElement(new Attribute(attribute.toString() + "_r", values));
+        }
+
+        attributes.addElement(new Attribute("Class", createClassAttribute()));
+
+        return new Instances("datasetName", attributes, 100);
+    }
+
+    protected FastVector createClassAttribute() {
+        FastVector classValues = new FastVector(2);
+        classValues.addElement(PrefState.Leq.name());
+        classValues.addElement(PrefState.NotLeq.name());
+        return classValues;
     }
 
     /**

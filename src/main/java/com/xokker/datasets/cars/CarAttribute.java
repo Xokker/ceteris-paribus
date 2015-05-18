@@ -1,6 +1,7 @@
 package com.xokker.datasets.cars;
 
 import com.google.common.base.Preconditions;
+import com.xokker.datasets.Attribute;
 
 /**
  * Attributes of cars from car preferences datasets
@@ -15,7 +16,7 @@ import com.google.common.base.Preconditions;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public enum CarAttribute {
+public enum CarAttribute implements Attribute {
 
     Sedan       ("BodyType", "1"),
     SUV         ("BodyType", "2"),
@@ -57,6 +58,7 @@ public enum CarAttribute {
         return null;
     }
 
+    @Override
     public String getCategory() {
         return category;
     }

@@ -1,5 +1,7 @@
 package com.xokker.predictor.impl;
 
+import com.xokker.datasets.Attribute;
+
 import java.util.Objects;
 import java.util.Set;
 
@@ -10,7 +12,7 @@ import java.util.Set;
  * @author Ernest Sadykov
  * @since 14.05.2015
  */
-public class CeterisParibusPreference<A> {
+public class CeterisParibusPreference<A extends Attribute> {
 
     private final Set<A> d;
     private final Set<A> f;

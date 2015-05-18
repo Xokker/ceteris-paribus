@@ -3,6 +3,7 @@ package com.xokker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import com.xokker.datasets.Attribute;
 import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 
@@ -17,7 +18,7 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 21.04.2015
  */
-public class PreferenceContext<A> {
+public class PreferenceContext<A extends Attribute> {
 
     private final Set<A> possibleAttributes;
     private final SetMultimap<Identifiable, A> objects;

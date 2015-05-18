@@ -1,8 +1,10 @@
 package com.xokker;
 
-import java.util.Set;
+import com.xokker.datasets.Attribute;
 
-import static com.google.common.collect.Sets.newHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Ernest Sadykov
@@ -16,5 +18,8 @@ public class Attributes {
     public static final String BrightInterior = "bright interior";
     public static final String DarkInterior = "dark interior";
 
-    public static final Set<String> AllAttrs = newHashSet(Minivan, SUV, RedExterior, WhiteExterior, BrightInterior, DarkInterior);
+    public static final Set<Attribute> AllAttrs =
+            Stream.of(Minivan, SUV, RedExterior, WhiteExterior, BrightInterior, DarkInterior)
+                    .map(ContextUtils::toAttribute)
+                    .collect(Collectors.toSet());
 }

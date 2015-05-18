@@ -2,23 +2,24 @@ package com.xokker.predictor.impl;
 
 import com.xokker.ContextUtils;
 import com.xokker.PreferenceContext;
+import com.xokker.datasets.Attribute;
 import com.xokker.graph.PreferenceGraph;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static com.xokker.Attributes.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CeterisParibusPredictorTest {
 
-    private PreferenceContext<String> preferenceContext;
-    private HashSet<String> c6 = newHashSet(SUV, RedExterior, BrightInterior);
-    private HashSet<String> c7 = newHashSet(Minivan, RedExterior, BrightInterior);
+    private PreferenceContext<Attribute> preferenceContext;
+    private Set<Attribute> c6 = Stream.of(SUV, RedExterior, BrightInterior).map(ContextUtils::toAttribute).collect(Collectors.toSet());
+    private Set<Attribute> c7 = Stream.of(Minivan, RedExterior, BrightInterior).map(ContextUtils::toAttribute).collect(Collectors.toSet());
 
     @Before
     public void setUp() throws Exception {

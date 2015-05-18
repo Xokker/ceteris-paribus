@@ -1,5 +1,6 @@
 package com.xokker.predictor.impl;
 
+import com.xokker.datasets.Attribute;
 import com.xokker.predictor.PreferencePredictor;
 
 import java.util.Set;
@@ -11,7 +12,7 @@ import static java.util.Collections.singleton;
  * @author Ernest Sadykov
  * @since 25.04.2015
  */
-public class ZeroRulePredictor<A> implements PreferencePredictor<A> {
+public class ZeroRulePredictor<A extends Attribute> implements PreferencePredictor<A> {
 
     private final boolean positive;
 
