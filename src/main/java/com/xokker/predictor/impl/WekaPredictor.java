@@ -95,6 +95,7 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
         FastVector classValues = new FastVector(2);
         classValues.addElement(PrefState.Leq.name());
         classValues.addElement(PrefState.NotLeq.name());
+
         return classValues;
     }
 
@@ -145,7 +146,7 @@ public abstract class WekaPredictor<A extends com.xokker.datasets.Attribute> imp
     /**
      * Method that converts a text message into an instance.
      */
-    private Instance makeInstance(Set<A> leftAttributes, Set<A> rightAttributes, Instances data) {
+    protected Instance makeInstance(Set<A> leftAttributes, Set<A> rightAttributes, Instances data) {
 
         // Create instance of length two.
         Instance instance = new Instance(allAttributes.size() * 2 + 1);

@@ -9,7 +9,7 @@ import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
-import com.xokker.predictor.impl.CeterisParibusPredictor;
+import com.xokker.predictor.impl.J48Predictor;
 import com.xokker.predictor.impl.Support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +47,7 @@ public class Cars2 {
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
         Map<Integer, Stats> result = new HashMap<>(users.size());
+//        for (Integer user : singleton(54)) {
         for (Integer user : users) {
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);
@@ -124,7 +125,7 @@ public class Cars2 {
 
     public static void main(String[] args) throws IOException {
         Cars2 cars2 = new Cars2();
-        Collection<Stats> stats = cars2.crossValidation(CeterisParibusPredictor::new).values();
+        Collection<Stats> stats = cars2.crossValidation((context) -> new J48Predictor<>(context, true)).values();
         DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
         logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
                 format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));

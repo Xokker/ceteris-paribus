@@ -1,11 +1,21 @@
 package com.xokker.predictor.impl;
 
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.xokker.PreferenceContext;
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.FastVector;
+import weka.core.Instance;
 import weka.core.Instances;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * @author Ernest Sadykov
@@ -36,19 +46,68 @@ public class J48Predictor<A extends com.xokker.datasets.Attribute> extends WekaP
 
     @Override
     protected Instances createData(PreferenceContext<A> context) {
+//        if (!usePairedNodes) {
+//            return super.createData(context);
+//        }
+
         FastVector attributes = new FastVector();
 
-        // Add attributes for left and right objects in pair
-        for (A attribute : allAttributes) {
-            FastVector values = new FastVector(2);
-            values.addElement(YES);
-            values.addElement(NO);
-            attributes.addElement(new Attribute(attribute.toString() + "_l", values));
-            attributes.addElement(new Attribute(attribute.toString() + "_r", values));
+        Multimap<String, A> grouped = groupedAttributes();
+
+        for (String category : grouped.keySet()) {
+            Collection<A> atts = grouped.get(category);
+            FastVector values = new FastVector(atts.size() * atts.size());
+            for (A i : atts) {
+                for (A j : atts) {
+                    values.addElement(createPair(i, j));
+                }
+            }
+            attributes.addElement(new Attribute(category, values));
         }
 
         attributes.addElement(new Attribute("Class", createClassAttribute()));
 
         return new Instances("datasetName", attributes, 100);
+    }
+
+    private String createPair(A i, A j) {
+        return i.toString() + ":" + j.toString();
+    }
+
+    private ImmutableListMultimap<String, A> groupedAttributes() {
+        return Multimaps.index(allAttributes, com.xokker.datasets.Attribute::getCategory);
+    }
+
+    @Override
+    protected Instance makeInstance(Set<A> leftAttributes, Set<A> rightAttributes, Instances data) {
+//        if (!usePairedNodes) {
+//            return super.makeInstance(leftAttributes, rightAttributes, data);
+//        }
+
+        Multimap<String, A> grouped = groupedAttributes();
+
+        // Create instance of length two.
+        Instance instance = new Instance(grouped.keySet().size() + 1);
+        instance.setDataset(data);
+
+        Map<String, A> leftIndex = leftAttributes.stream().collect(toMap(
+                com.xokker.datasets.Attribute::getCategory,
+                a -> a));
+
+        Map<String, A> rightIndex = rightAttributes.stream().collect(toMap(
+                com.xokker.datasets.Attribute::getCategory,
+                a -> a));
+
+        for (String category : leftIndex.keySet()) {
+            Attribute att = data.attribute(category);
+            A left = leftIndex.get(category);
+            A right = rightIndex.get(category);
+            instance.setValue(att.index(), createPair(left, right));
+        }
+
+        // Give instance access to attribute information from the dataset.
+        instance.setDataset(data);
+
+        return instance;
     }
 }

@@ -25,8 +25,8 @@ public enum CarAttribute implements Attribute {
     Manual      ("Transmission", "1"),
     Automatic   ("Transmission", "2"),
 
-    EngineXS    ("Engin Capacity", "2.5"),
-    EngineS     ("Engin Capacity", "3.5"),
+    EngineXS    ("Engin Capacity", "2.5"), // i am aware of typo ("Engin"),
+    EngineS     ("Engin Capacity", "3.5"), // there is a mistake in the dataset
     EngineM     ("Engin Capacity", "4.5"),
     EngineL     ("Engin Capacity", "5.5"),
     EngineXL    ("Engin Capacity", "6.2"),
