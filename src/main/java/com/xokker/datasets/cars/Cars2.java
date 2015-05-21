@@ -1,6 +1,5 @@
 package com.xokker.datasets.cars;
 
-import com.google.common.collect.Multimap;
 import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
@@ -9,63 +8,36 @@ import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
-import com.xokker.predictor.impl.J48Predictor;
+import com.xokker.predictor.impl.BayesPredictor;
 import com.xokker.predictor.impl.Support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static com.xokker.IntIdentifiable.ii;
-import static com.xokker.datasets.Datasets.Cars1;
-import static com.xokker.datasets.cars.CarPreferencesFileReader.*;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class Cars2 {
+public class Cars2 extends AbstractCars {
 
     private static final Logger logger = LoggerFactory.getLogger(Cars2.class);
 
     /**
-     * @return key - user
-     *         value - stats for this user
-     */
-    public Map<Integer, Stats> crossValidation(
-            Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator)
-            throws IOException {
-
-        Multimap<Integer, PrefEntry> preferences = readPreferences(Cars1.getPrefsPath());
-        Map<Identifiable, Set<CarAttribute>> objects = readItems(Cars1.getItemsPath());
-        Set<Integer> users = readUsers(Cars1.getUsersPath());
-        logger.info("users: {}", users);
-        objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
-
-        Map<Integer, Stats> result = new HashMap<>(users.size());
-//        for (Integer user : singleton(54)) {
-        for (Integer user : users) {
-            logger.info("user {}:", user);
-            Collection<PrefEntry> userPreferences = preferences.get(user);
-            logger.info("{} preferences", userPreferences.size());
-            Stats stats = crossValidation(objects, userPreferences, predictorCreator);
-            logger.info("avg penalty for user #{} is {}", user, stats.getAveragePenalty());
-            result.put(user, stats);
-        }
-
-        return result;
-    }
-
-    /**
      * Cross-validation for single user
      */
-    private Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
-                                  Collection<PrefEntry> preferences,
-                                  Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
+    @Override
+    protected Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
+                                    Collection<PrefEntry> preferences,
+                                    Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
 
         Stats result = new Stats();
         for (int removedElementIndex = 0; removedElementIndex < objects.keySet().size(); removedElementIndex++) {
@@ -112,28 +84,8 @@ public class Cars2 {
         return result;
     }
 
-    private Map<Identifiable, Set<CarAttribute>> mapWithoutKey(Map<Identifiable, Set<CarAttribute>> objects, Identifiable removedElement) {
-        Map<Identifiable, Set<CarAttribute>> objectsWithoutElement = new HashMap<>(objects);
-        objectsWithoutElement.remove(removedElement);
-        return objectsWithoutElement;
-    }
-
-    private <T> Set<T> mergeSets(Collection<Set<T>> values) {
-        return values.stream()
-                .flatMap(Collection::stream)
-                .collect(toSet());
-    }
-
     public static void main(String[] args) throws IOException {
         Cars2 cars2 = new Cars2();
-        Collection<Stats> stats = cars2.crossValidation((context) -> new J48Predictor<>(context, true)).values();
-        DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
-        logger.info("J48Predictor<>(context, true)");
-        logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
-                format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));
-    }
-
-    private static String format(double d) {
-        return String.format("%.2f", d);
+        cars2.perform((context) -> new BayesPredictor<CarAttribute>(context));
     }
 }

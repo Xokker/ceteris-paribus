@@ -1,6 +1,5 @@
 package com.xokker.datasets.cars;
 
-import com.google.common.collect.Multimap;
 import com.xokker.*;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
@@ -15,52 +14,24 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.xokker.datasets.Datasets.Cars1;
-import static com.xokker.datasets.cars.CarPreferencesFileReader.*;
 import static com.xokker.graph.PreferenceGraph.initBucketOrder;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class CarsWithBucketOrders {
+public class CarsWithBucketOrders extends AbstractCars {
 
     private static final Logger logger = LoggerFactory.getLogger(CarsWithBucketOrders.class);
 
     private Random random = new Random();
 
     /**
-     * @return key - user
-     *         value - stats for this user
-     */
-    public Map<Integer, Stats> crossValidation(
-            Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator)
-            throws IOException {
-
-        Multimap<Integer, PrefEntry> preferences = readPreferences(Cars1.getPrefsPath());
-        Map<Identifiable, Set<CarAttribute>> objects = readItems(Cars1.getItemsPath());
-        Set<Integer> users = readUsers(Cars1.getUsersPath());
-        logger.info("users: {}", users);
-        objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
-
-        Map<Integer, Stats> result = new HashMap<>(users.size());
-        for (Integer user : Collections.singleton(54)) {
-            logger.info("user {}:", user);
-            Stats stats = crossValidation(objects, preferences.get(user), predictorCreator);
-            logger.info("avg penalty for user #{} is {}", user, stats.getAveragePenalty());
-            result.put(user, stats);
-        }
-
-        return result;
-    }
-
-    /**
      * Cross-validation for single user
      */
-    private Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
-                                  Collection<PrefEntry> preferences,
-                                  Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
+    protected Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
+                                    Collection<PrefEntry> preferences,
+                                    Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
         BucketOrders bucketOrders = new BucketOrders(preferences);
         List<Set<Identifiable>> originalBuckets = bucketOrders.bucketPivot();
         logger.info("bucket order: {}", originalBuckets);
@@ -130,12 +101,6 @@ public class CarsWithBucketOrders {
         return result;
     }
 
-    private Map<Identifiable, Set<CarAttribute>> mapWithoutKey(Map<Identifiable, Set<CarAttribute>> objects, Identifiable removedElement) {
-        Map<Identifiable, Set<CarAttribute>> objectsWithoutElement = new HashMap<>(objects);
-        objectsWithoutElement.remove(removedElement);
-        return objectsWithoutElement;
-    }
-
     private List<Set<Identifiable>> deepCopy(List<Set<Identifiable>> originalBuckets) {
         List<Set<Identifiable>> res = new ArrayList<>();
         for (Set<Identifiable> originalBucket : originalBuckets) {
@@ -162,21 +127,8 @@ public class CarsWithBucketOrders {
         }
     }
 
-    private <T> Set<T> mergeSets(Collection<Set<T>> values) {
-        return values.stream()
-                .flatMap(Collection::stream)
-                .collect(toSet());
-    }
-
     public static void main(String[] args) throws IOException {
         CarsWithBucketOrders carsWithBucketOrders = new CarsWithBucketOrders();
-        Collection<Stats> stats = carsWithBucketOrders.crossValidation(CeterisParibusPredictor::new).values();
-        DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
-        logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
-                format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));
-    }
-
-    private static String format(double d) {
-        return String.format("%.2f", d);
+        carsWithBucketOrders.perform(CeterisParibusPredictor::new);
     }
 }
