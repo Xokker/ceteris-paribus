@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static com.xokker.IntIdentifiable.ii;
 import static java.util.stream.Collectors.toList;
 
@@ -43,27 +44,35 @@ public class Cars2 extends AbstractCars {
         for (int removedElementIndex = 0; removedElementIndex < objects.keySet().size(); removedElementIndex++) {
             Identifiable removedElement = ii(removedElementIndex);
 
-            PreferenceGraph filteredPreferenceGraph = new ArrayPreferenceGraph(objects.size());
-            List<PrefEntry> filteredPreferences = preferences.stream()
-                    .filter(e -> !e.id1.equals(removedElement))
-                    .filter(e -> !e.id2.equals(removedElement))
-                    .collect(toList());
-            PreferenceGraph.init(filteredPreferenceGraph, filteredPreferences);
-
-            PreferenceGraph preferenceGraph = new ArrayPreferenceGraph(objects.size());
-            PreferenceGraph.init(preferenceGraph, preferences);
-
-            Set<CarAttribute> possibleAttributes = mergeSets(objects.values());
-
-            PreferenceContext<CarAttribute> context = new PreferenceContext<>(possibleAttributes, filteredPreferenceGraph);
-
-            context.addObjects(mapWithoutKey(objects, removedElement));
-            PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
-            predictor.init();
-
             double penalty = 0;
 
             for (Identifiable current : objects.keySet()) {
+                if (current.equals(removedElement)) {
+                    continue;
+                }
+                Set<Identifiable> removedElements = newHashSet(removedElement);
+                if (isRemove2Elements()) {
+                    removedElements.add(current);
+                }
+
+                PreferenceGraph filteredPreferenceGraph = new ArrayPreferenceGraph(objects.size());
+                List<PrefEntry> filteredPreferences = preferences.stream()
+                        .filter(e -> !removedElements.contains(e.id1))
+                        .filter(e -> !removedElements.contains(e.id2))
+                        .collect(toList());
+                PreferenceGraph.init(filteredPreferenceGraph, filteredPreferences);
+
+                PreferenceGraph preferenceGraph = new ArrayPreferenceGraph(objects.size());
+                PreferenceGraph.init(preferenceGraph, preferences);
+
+                Set<CarAttribute> possibleAttributes = mergeSets(objects.values());
+
+                PreferenceContext<CarAttribute> context = new PreferenceContext<>(possibleAttributes, filteredPreferenceGraph);
+
+                context.addObjects(mapWithoutKeys(objects, removedElements));
+                PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
+                predictor.init();
+
                 Set<Support> ret1 = predictor.predictPreference(objects.get(current), objects.get(removedElement));
                 int support1 = ret1.size();
                 Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(current));
@@ -74,10 +83,13 @@ public class Cars2 extends AbstractCars {
                 if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && support1 < support2) {
                     penalty += 1;
                 }
+                if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && support1 == support2) {
+                    penalty += 0.5;
+                }
                 logger.info("{} vs {} for elements {} and {}", support1, support2, removedElement, current);
             }
 
-            result.addPenalty(penalty);
+            result.addPenalty(penalty / 9);
             logger.info("removedElementBucketIndex: {} penalty: {}", removedElementIndex, penalty);
         }
 
@@ -86,6 +98,7 @@ public class Cars2 extends AbstractCars {
 
     public static void main(String[] args) throws IOException {
         Cars2 cars2 = new Cars2();
+        cars2.remove2Elements();
         cars2.perform((context) -> new BayesPredictor<CarAttribute>(context));
     }
 }

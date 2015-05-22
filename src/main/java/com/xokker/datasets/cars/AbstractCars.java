@@ -28,6 +28,8 @@ public abstract class AbstractCars {
 
     private static final Logger logger = LoggerFactory.getLogger(Cars2.class);
 
+    private boolean remove2Elements = false;
+
     /**
      * @return key - user
      *         value - stats for this user
@@ -97,8 +99,12 @@ public abstract class AbstractCars {
         logger.info("{}", descriptiveStatistics.toString());
     }
 
-    private static String format(double d) {
-        return String.format("%.2f", d);
+    public boolean isRemove2Elements() {
+        return remove2Elements;
+    }
+
+    public void remove2Elements() {
+        this.remove2Elements = true;
     }
 }
 
