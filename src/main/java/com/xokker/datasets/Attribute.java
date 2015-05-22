@@ -6,4 +6,12 @@ package com.xokker.datasets;
  */
 public interface Attribute {
     String getCategory();
+
+    default boolean isNumeric() {
+        return false;
+    }
+
+    default double asDouble() {
+        throw new UnsupportedOperationException();
+    }
 }

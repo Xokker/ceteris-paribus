@@ -18,6 +18,7 @@ public class BayesPredictor<A extends Attribute> extends WekaPredictor<A> {
     @Override
     protected Classifier createClassifier() {
         return new BayesNetGenerator();
+//        return new NaiveBayes();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.xokker.predictor.impl;
 
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.xokker.PreferenceContext;
@@ -13,7 +14,7 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,14 +29,16 @@ public class J48Predictor<A extends com.xokker.datasets.Attribute> extends WekaP
     private static final Logger logger = LoggerFactory.getLogger(J48Predictor.class);
 
     private final boolean usePairedNodes;
+    private final boolean supportNumeric;
 
     public J48Predictor(PreferenceContext<A> context) {
-        this(context, false);
+        this(context, false, false);
     }
 
-    public J48Predictor(PreferenceContext<A> context, boolean usePairedNodes) {
+    public J48Predictor(PreferenceContext<A> context, boolean usePairedNodes, boolean supportNumeric) {
         super(context);
         this.usePairedNodes = usePairedNodes;
+        this.supportNumeric = supportNumeric;
     }
 
     @Override
@@ -56,17 +59,21 @@ public class J48Predictor<A extends com.xokker.datasets.Attribute> extends WekaP
 
         FastVector attributes = new FastVector();
 
-        Multimap<String, A> grouped = groupedAttributes();
+        ListMultimap<String, A> grouped = groupedAttributes();
 
         for (String category : grouped.keySet()) {
-            Collection<A> atts = grouped.get(category);
-            FastVector values = new FastVector(atts.size() * atts.size());
-            for (A i : atts) {
-                for (A j : atts) {
-                    values.addElement(createPair(i, j));
+            List<A> atts = grouped.get(category);
+            if (supportNumeric && atts.get(0).isNumeric()) {
+                attributes.addElement(new Attribute(category));
+            } else {
+                FastVector values = new FastVector(atts.size() * atts.size());
+                for (A i : atts) {
+                    for (A j : atts) {
+                        values.addElement(createPair(i, j));
+                    }
                 }
+                attributes.addElement(new Attribute(category, values));
             }
-            attributes.addElement(new Attribute(category, values));
         }
 
         attributes.addElement(new Attribute("Class", createClassAttribute()));
@@ -106,7 +113,11 @@ public class J48Predictor<A extends com.xokker.datasets.Attribute> extends WekaP
             Attribute att = data.attribute(category);
             A left = leftIndex.get(category);
             A right = rightIndex.get(category);
-            instance.setValue(att.index(), createPair(left, right));
+            if (supportNumeric && left.isNumeric()) {
+                instance.setValue(att.index(), left.asDouble() - right.asDouble());
+            } else {
+                instance.setValue(att.index(), createPair(left, right)); //TODO: use data.attribute(att.index()).indexOfValue(_)??
+            }
         }
 
         // Give instance access to attribute information from the dataset.

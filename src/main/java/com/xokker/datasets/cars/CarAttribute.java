@@ -25,11 +25,11 @@ public enum CarAttribute implements Attribute {
     Manual      ("Transmission", "1"),
     Automatic   ("Transmission", "2"),
 
-    EngineXS    ("Engin Capacity", "2.5"), // i am aware of typo ("Engin"),
-    EngineS     ("Engin Capacity", "3.5"), // there is a mistake in the dataset
-    EngineM     ("Engin Capacity", "4.5"),
-    EngineL     ("Engin Capacity", "5.5"),
-    EngineXL    ("Engin Capacity", "6.2"),
+    EngineXS    ("Engin Capacity", "2.5", true),
+    EngineS     ("Engin Capacity", "3.5", true),
+    EngineM     ("Engin Capacity", "4.5", true),
+    EngineL     ("Engin Capacity", "5.5", true),
+    EngineXL    ("Engin Capacity", "6.2", true),
 
     Hybrid      ("Fuel Consumed", "1"),
     NonHybrid   ("Fuel Consumed", "2"),
@@ -39,10 +39,16 @@ public enum CarAttribute implements Attribute {
 
     private final String category;
     private final String id;
+    private final boolean numeric;
 
     CarAttribute(String category, String id) {
+        this(category, id, false);
+    }
+
+    CarAttribute(String category, String id, boolean isNumeric) {
         this.category = category;
         this.id = id;
+        this.numeric = isNumeric;
     }
 
     public static CarAttribute get(String category, String id) {
@@ -61,6 +67,20 @@ public enum CarAttribute implements Attribute {
     @Override
     public String getCategory() {
         return category;
+    }
+
+    @Override
+    public boolean isNumeric() {
+        return numeric;
+    }
+
+    @Override
+    public double asDouble() {
+        if (isNumeric()) {
+            return Double.parseDouble(id);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public String getId() {

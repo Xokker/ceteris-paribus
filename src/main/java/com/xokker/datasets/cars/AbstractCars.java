@@ -1,11 +1,13 @@
 package com.xokker.datasets.cars;
 
 import com.google.common.collect.Multimap;
+import com.google.common.primitives.Doubles;
 import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
 import com.xokker.predictor.PreferencePredictor;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,7 @@ import java.util.function.Function;
 
 import static com.xokker.datasets.Datasets.Cars1;
 import static com.xokker.datasets.cars.CarPreferencesFileReader.*;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -61,10 +64,16 @@ public abstract class AbstractCars {
                                   Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator);
 
 
-    protected Map<Identifiable, Set<CarAttribute>> mapWithoutKey(Map<Identifiable, Set<CarAttribute>> objects, Identifiable removedElement) {
+    protected Map<Identifiable, Set<CarAttribute>> mapWithoutKeys(Map<Identifiable, Set<CarAttribute>> objects, Collection<Identifiable> remove) {
         Map<Identifiable, Set<CarAttribute>> objectsWithoutElement = new HashMap<>(objects);
-        objectsWithoutElement.remove(removedElement);
+        for (Identifiable identifiable : remove) {
+            objectsWithoutElement.remove(identifiable);
+        }
         return objectsWithoutElement;
+    }
+
+    protected Map<Identifiable, Set<CarAttribute>> mapWithoutKey(Map<Identifiable, Set<CarAttribute>> objects, Identifiable removedElement) {
+        return mapWithoutKeys(objects, Collections.singleton(removedElement));
     }
 
     protected <T> Set<T> mergeSets(Collection<Set<T>> values) {
@@ -81,9 +90,11 @@ public abstract class AbstractCars {
             e.printStackTrace();
             return;
         }
-        DoubleSummaryStatistics summary = stats.stream().mapToDouble(Stats::getAveragePenalty).summaryStatistics();
-        logger.info("max avg penalty: {}, min avg penalty: {}, avg avg penalty: {}",
-                format(summary.getMax()), format(summary.getMin()), format(summary.getAverage()));
+
+        List<Double> values = stats.stream().map(Stats::getAveragePenalty).collect(toList());
+
+        DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics(Doubles.toArray(values));
+        logger.info("{}", descriptiveStatistics.toString());
     }
 
     private static String format(double d) {
