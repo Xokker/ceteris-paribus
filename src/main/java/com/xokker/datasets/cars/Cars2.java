@@ -8,7 +8,7 @@ import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
-import com.xokker.predictor.impl.BayesPredictor;
+import com.xokker.predictor.impl.CeterisParibusPredictor;
 import com.xokker.predictor.impl.Support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,19 +77,23 @@ public class Cars2 extends AbstractCars {
                 int support1 = ret1.size();
                 Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(current));
                 int support2 = ret2.size();
+                double currentPenalty = 0.0;
                 if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && support1 > support2) {
                     penalty += 1;
+                    currentPenalty = 1;
                 }
                 if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && support1 < support2) {
                     penalty += 1;
+                    currentPenalty = 1;
                 }
                 if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && support1 == support2) {
                     penalty += 0.5;
+                    currentPenalty = 0.5;
                 }
-                logger.info("{} vs {} for elements {} and {}", support1, support2, removedElement, current);
+                logger.info("{} vs {} for elements {} and {}. pen: {}", support1, support2, removedElement, current, currentPenalty);
             }
 
-            result.addPenalty(penalty / 9);
+            result.addPenalty(1 - penalty / 9);
             logger.info("removedElementBucketIndex: {} penalty: {}", removedElementIndex, penalty);
         }
 
@@ -99,6 +103,7 @@ public class Cars2 extends AbstractCars {
     public static void main(String[] args) throws IOException {
         Cars2 cars2 = new Cars2();
         cars2.remove2Elements();
-        cars2.perform((context) -> new BayesPredictor<CarAttribute>(context));
+//        cars2.perform((context) -> new J48Predictor<CarAttribute>(context, true, false));
+        cars2.perform((context) -> new CeterisParibusPredictor<CarAttribute>(context));
     }
 }
