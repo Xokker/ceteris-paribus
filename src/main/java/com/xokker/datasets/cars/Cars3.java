@@ -77,17 +77,21 @@ public class Cars3 extends AbstractCars {
 
                 double currentPenalty = 0.0;
                 if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && comparison < 0) {
-                    penalty += 1;
                     currentPenalty = 1;
+                    result.falsePositive();
                 }
                 if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && comparison > 0) {
-                    penalty += 1;
                     currentPenalty = 1;
+                    result.falsePositive();
                 }
                 if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && comparison == 0) {
-                    penalty += 0.5;
                     currentPenalty = 0.5;
+                    result.falseNegative();
                 }
+                if (currentPenalty == 0) {
+                    result.truePositive();
+                }
+                penalty += currentPenalty;
                 logger.info("comp: {} for elements {} and {}. pen: {}", comparison, removedElement, current, currentPenalty);
             }
 
@@ -100,7 +104,7 @@ public class Cars3 extends AbstractCars {
 
     public static void main(String[] args) throws IOException {
         Cars3 cars3 = new Cars3();
-//        cars3.remove2Elements();
+        cars3.remove2Elements();
         cars3.perform(CeterisParibusPredictor::new);
     }
 }

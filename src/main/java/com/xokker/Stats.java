@@ -13,6 +13,9 @@ public class Stats {
 
     private Integer userId;
     private List<Double> penalties;
+    private int truePositiveCount;
+    private int falsePositiveCount;
+    private int falseNegativeCount;
 
     public Stats(Integer userId) {
         this.userId = userId;
@@ -21,6 +24,26 @@ public class Stats {
 
     public Stats() {
         this(null);
+    }
+
+    public void truePositive() {
+        truePositiveCount++;
+    }
+
+    public void falsePositive() {
+        falsePositiveCount++;
+    }
+
+    public void falseNegative() {
+        falseNegativeCount++;
+    }
+
+    public double getPrecision() {
+        return ((double) truePositiveCount) / (truePositiveCount + falsePositiveCount);
+    }
+
+    public double getRecall() {
+        return ((double) truePositiveCount) / (truePositiveCount + falseNegativeCount);
     }
 
     public double getAveragePenalty() {

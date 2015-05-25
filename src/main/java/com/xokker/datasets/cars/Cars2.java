@@ -79,17 +79,21 @@ public class Cars2 extends AbstractCars {
                 int support2 = ret2.size();
                 double currentPenalty = 0.0;
                 if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && support1 > support2) {
-                    penalty += 1;
                     currentPenalty = 1;
+                    result.falsePositive();
                 }
                 if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && support1 < support2) {
-                    penalty += 1;
                     currentPenalty = 1;
+                    result.falsePositive();
                 }
                 if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && support1 == support2) {
-                    penalty += 0.5;
                     currentPenalty = 0.5;
+                    result.falseNegative();
                 }
+                if (currentPenalty == 0) {
+                    result.truePositive();
+                }
+                penalty += currentPenalty;
                 logger.info("{} vs {} for elements {} and {}. pen: {}", support1, support2, removedElement, current, currentPenalty);
             }
 
