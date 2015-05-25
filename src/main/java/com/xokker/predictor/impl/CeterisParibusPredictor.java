@@ -149,7 +149,8 @@ public class CeterisParibusPredictor<A extends Attribute> implements PreferenceP
                 maxLeftRight = leftRight;
                 fixedlr_max = fixedlr;
                 while (maxLeftRight >= maxRightLeft && iterator.hasNext()) {
-                    Set<Support> fixedrl = fixed(second, first, iterator.next());
+                    CeterisParibusPreference<A> next = iterator.next();
+                    Set<Support> fixedrl = fixed(second, first, next);
                     int rightLeft = fixedrl.size();
                     if (rightLeft > maxRightLeft) {
                         maxRightLeft = rightLeft;
@@ -157,6 +158,12 @@ public class CeterisParibusPredictor<A extends Attribute> implements PreferenceP
                     }
                 }
             }
+        }
+
+        if (maxLeftRight == maxRightLeft && maxLeftRight == 0) {
+            Set<Support> supportLR = predictPreference(first, second);
+            Set<Support> supportRL = predictPreference(second, first);
+            return supportRL.size() - supportLR.size();
         }
 
         return maxRightLeft - maxLeftRight;

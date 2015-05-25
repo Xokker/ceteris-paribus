@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.xokker.datasets.Datasets.Cars1;
 import static com.xokker.datasets.cars.CarPreferencesFileReader.*;
 import static java.util.stream.Collectors.toList;
@@ -45,8 +46,8 @@ public abstract class AbstractCars {
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
         Map<Integer, Stats> result = new HashMap<>(users.size());
-//        for (Integer user : newArrayList(11, 13, 14, 15, 17)) {
-        for (Integer user : users) {
+        for (Integer user : newArrayList(17)) {
+//        for (Integer user : users) {
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);
             logger.info("{} preferences", userPreferences.size());

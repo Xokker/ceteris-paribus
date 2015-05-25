@@ -75,19 +75,23 @@ public class Cars3 extends AbstractCars {
 
                 int comparison = predictor.predict(objects.get(current), objects.get(removedElement));
 
+                double currentPenalty = 0.0;
                 if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && comparison < 0) {
                     penalty += 1;
+                    currentPenalty = 1;
                 }
                 if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && comparison > 0) {
                     penalty += 1;
+                    currentPenalty = 1;
                 }
                 if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && comparison == 0) {
                     penalty += 0.5;
+                    currentPenalty = 0.5;
                 }
-                logger.info("comp: {} for elements {} and {}", comparison, removedElement, current);
+                logger.info("comp: {} for elements {} and {}. pen: {}", comparison, removedElement, current, currentPenalty);
             }
 
-            result.addPenalty(penalty / 9);
+            result.addPenalty(1 - penalty / 9);
             logger.info("removedElementBucketIndex: {} penalty: {}", removedElementIndex, penalty);
         }
 
@@ -96,7 +100,7 @@ public class Cars3 extends AbstractCars {
 
     public static void main(String[] args) throws IOException {
         Cars3 cars3 = new Cars3();
-        cars3.remove2Elements();
+//        cars3.remove2Elements();
         cars3.perform(CeterisParibusPredictor::new);
     }
 }
