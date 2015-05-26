@@ -9,16 +9,15 @@ import weka.classifiers.bayes.net.BayesNetGenerator;
  * @author Ernest Sadykov
  * @since 17.05.2015
  */
-public class BayesPredictor<A extends Attribute> extends WekaPredictor<A> {
+public class BayesNetPredictor<A extends Attribute> extends WekaPredictor<A> {
 
-    public BayesPredictor(PreferenceContext<A> context) {
+    public BayesNetPredictor(PreferenceContext<A> context) {
         super(context);
     }
 
     @Override
     protected Classifier createClassifier() {
         return new BayesNetGenerator();
-//        return new NaiveBayes();
     }
 
     @Override
