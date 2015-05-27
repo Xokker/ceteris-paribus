@@ -20,7 +20,7 @@ import static com.xokker.graph.PreferenceGraph.initBucketOrder;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class CarsWithBucketOrders extends AbstractCars {
+public class CarsWithBucketOrders extends AbstractCars<CarAttribute> {
 
     private static final Logger logger = LoggerFactory.getLogger(CarsWithBucketOrders.class);
 
