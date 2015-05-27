@@ -1,11 +1,10 @@
 package com.xokker.predictor;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.xokker.datasets.Attribute;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Ernest Sadykov
@@ -13,24 +12,33 @@ import java.util.Collection;
  */
 public class PredicateList<A extends Attribute> {
 
-    private Multimap<AttributePredicate, Pair<A, A>> data;
+    private Map<AttributePredicate, Map<String, Pair<A, A>>> data;
 
     public PredicateList() {
-        data = HashMultimap.create();
+        data = new HashMap<>();
     }
 
-    public boolean put(AttributePredicate predicate, Pair<A, A> elements) {
-        return data.put(predicate, elements);
+    public void put(AttributePredicate predicate, String category, Pair<A, A> elements) {
+        Map<String, Pair<A, A>> map = data.get(predicate);
+        if (map == null) {
+            map = new HashMap<>();
+            map.put(category, elements);
+            data.put(predicate, map);
+        } else {
+            map.put(category, elements);
+        }
     }
 
     public PredicateList<A> intersect(PredicateList<A> gh) {
         PredicateList<A> result = new PredicateList<>();
-        for (AttributePredicate key : data.keySet()) {
-            Collection<Pair<A, A>> first = data.get(key);
-            Collection<Pair<A, A>> second = gh.data.get(key);
-            for (Pair<A, A> pair : first) {
-                if (second.contains(pair)) {
-                    result.put(key, pair);
+        for (AttributePredicate pred : data.keySet()) {
+            Map<String, Pair<A, A>> first = data.get(pred);
+            Map<String, Pair<A, A>> second = gh.data.get(pred);
+            for (Map.Entry<String, Pair<A, A>> firstEntry : first.entrySet()) {
+                String key = firstEntry.getKey();
+                Pair<A, A> value = firstEntry.getValue();
+                if (second != null && second.containsKey(key) && second.get(key).equals(value)) {
+                    result.put(pred, key, value);
                 }
             }
         }
@@ -38,7 +46,7 @@ public class PredicateList<A extends Attribute> {
         return result;
     }
 
-    public Multimap<AttributePredicate, Pair<A, A>> getData() {
+    public Map<AttributePredicate, Map<String, Pair<A, A>>> getData() {
         return data;
     }
 }

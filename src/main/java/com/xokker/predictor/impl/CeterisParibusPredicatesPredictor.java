@@ -1,6 +1,5 @@
 package com.xokker.predictor.impl;
 
-import com.google.common.collect.Multimap;
 import com.xokker.Identifiable;
 import com.xokker.PreferenceContext;
 import com.xokker.datasets.Attribute;
@@ -133,13 +132,13 @@ public class CeterisParibusPredicatesPredictor<A extends Attribute> implements P
         PredicateList<A> result = new PredicateList<>();
         for (AttributePredicate predicate : AttributePredicate.values()) {
             for (Map.Entry<String, A> fEntry : fGroupped.entrySet()) {
-                String key = fEntry.getKey();
-                A sAtt = sGroupped.get(key);
+                String category = fEntry.getKey();
+                A sAtt = sGroupped.get(category);
                 if (!sAtt.isNumeric() && !predicate.canWorkWithNominal()) {
                     continue;
                 }
                 if (predicate.check(fEntry.getValue(), sAtt)) {
-                    result.put(predicate, Pair.of(fEntry.getValue(), sAtt));
+                    result.put(predicate, category, Pair.of(fEntry.getValue(), sAtt));
                 }
             }
         }
@@ -176,10 +175,10 @@ public class CeterisParibusPredicatesPredictor<A extends Attribute> implements P
                         a -> Pair.of(a, find(hIntent, a.getCategory())))
         );
 
-        Multimap<AttributePredicate, Pair<A, A>> data = f.getData();
+        Map<AttributePredicate, Map<String, Pair<A, A>>> data = f.getData();
         for (AttributePredicate p : data.keySet()) {
-            Collection<Pair<A, A>> pairs = data.get(p);
-            for (Pair<A, A> pair : pairs) {
+            Map<String, Pair<A, A>> pairs = data.get(p);
+            for (Pair<A, A> pair : pairs.values()) {
                 if (groupped.values().contains(pair)) {
                     if (!p.check(pair.getLeft(), pair.getRight())) {
                         return false;
