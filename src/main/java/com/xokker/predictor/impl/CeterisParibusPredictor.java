@@ -70,8 +70,8 @@ public class CeterisParibusPredictor<A extends Attribute> implements PreferenceP
      */
     @Override
     public int predict(Set<A> first, Set<A> second) {
-        Map<Integer, CeterisParibusPreference<A>> lr = predictPreferenceCounted(first, second);
-        Map<Integer, CeterisParibusPreference<A>> rl = predictPreferenceCounted(second, first);
+        Map<Integer, CPPreference<A>> lr = predictPreferenceCounted(first, second);
+        Map<Integer, CPPreference<A>> rl = predictPreferenceCounted(second, first);
 
         return rl.keySet().stream().max(Comparator.<Integer>naturalOrder()).orElseGet(() -> 0) -
                 lr.keySet().stream().max(Comparator.<Integer>naturalOrder()).orElseGet(() -> 0);
@@ -96,11 +96,11 @@ public class CeterisParibusPredictor<A extends Attribute> implements PreferenceP
         return true;
     }
 
-    public Map<Integer, CeterisParibusPreference<A>> predictPreferenceCounted(Set<A> a, Set<A> b) {
+    public Map<Integer, CPPreference<A>> predictPreferenceCounted(Set<A> a, Set<A> b) {
         Set<Identifiable> allObjects = context.getAllObjects();
         Set<A> allAttributes = context.getAllAttributes();
 
-        Map<Integer, CeterisParibusPreference<A>> result = new HashMap<>();
+        Map<Integer, CPPreference<A>> result = new HashMap<>();
         for (Identifiable g : allObjects) {
             Set<A> d = intersection(a, context.getObjectIntent(g));
             for (Identifiable h : difference(allObjects, singleton(g))) {
@@ -115,7 +115,7 @@ public class CeterisParibusPredictor<A extends Attribute> implements PreferenceP
                     int c = checkPreferenceCounted(d, f, e);
                     if (c > 0) {
                         logger.trace("{} <{}= {}    for {} and {}", d, f, e, a, b);
-                        result.put(c, new CeterisParibusPreference<A>(d, f, e));
+                        result.put(c, new CPPreference<A>(d, f, e));
                     }
                 }
             }

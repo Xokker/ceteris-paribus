@@ -3,6 +3,8 @@ package com.xokker.datasets.cars;
 import com.google.common.base.Preconditions;
 import com.xokker.datasets.Attribute;
 
+import java.util.Comparator;
+
 /**
  * Attributes of cars from car preferences datasets
  * (http://users.cecs.anu.edu.au/~u4940058/CarPreferences.html)
@@ -16,7 +18,7 @@ import com.xokker.datasets.Attribute;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public enum CarAttribute implements Attribute {
+public enum CarAttribute implements Attribute<CarAttribute> {
 
     Sedan       ("BodyType", "1"),
     SUV         ("BodyType", "2"),
@@ -35,7 +37,11 @@ public enum CarAttribute implements Attribute {
     NonHybrid   ("Fuel Consumed", "2"),
 
     AWD         ("Engine/Transmission Layout", "1"),
-    FWD         ("Engine/Transmission Layout", "2");
+    FWD         ("Engine/Transmission Layout", "2")
+    ;
+
+    private static final Comparator<CarAttribute> comparator =
+            Comparator.comparingDouble(CarAttribute::asDouble);
 
     private final String category;
     private final String id;
@@ -72,6 +78,11 @@ public enum CarAttribute implements Attribute {
     @Override
     public boolean isNumeric() {
         return numeric;
+    }
+
+    @Override
+    public Comparator<CarAttribute> comparator() {
+        return isNumeric() ? comparator : Attribute.super.comparator();
     }
 
     @Override

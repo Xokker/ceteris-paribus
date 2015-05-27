@@ -12,13 +12,13 @@ import java.util.Set;
  * @author Ernest Sadykov
  * @since 14.05.2015
  */
-public class CeterisParibusPreference<A extends Attribute> {
+public class CPPreference<A extends Attribute> {
 
     private final Set<A> d;
     private final Set<A> f;
     private final Set<A> e;
 
-    public CeterisParibusPreference(Set<A> d, Set<A> f, Set<A> e) {
+    public CPPreference(Set<A> d, Set<A> f, Set<A> e) {
         Objects.requireNonNull(d);
         Objects.requireNonNull(f);
         Objects.requireNonNull(e);
@@ -45,7 +45,7 @@ public class CeterisParibusPreference<A extends Attribute> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CeterisParibusPreference that = (CeterisParibusPreference) o;
+        CPPreference that = (CPPreference) o;
 
         return d.equals(that.d) && e.equals(that.e) && f.equals(that.f);
 
