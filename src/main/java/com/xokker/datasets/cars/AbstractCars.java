@@ -6,6 +6,7 @@ import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
+import com.xokker.datasets.PreferenceReader;
 import com.xokker.predictor.PreferencePredictor;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.xokker.datasets.Datasets.Cars1;
-import static com.xokker.datasets.cars.CarPreferencesFileReader.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -38,9 +38,10 @@ public abstract class AbstractCars {
             Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator)
             throws IOException {
 
-        Multimap<Integer, PrefEntry> preferences = readPreferences(Cars1.getPrefsPath());
-        Map<Identifiable, Set<CarAttribute>> objects = readItems(Cars1.getItemsPath());
-        Set<Integer> users = readUsers(Cars1.getUsersPath());
+        PreferenceReader preferenceReader = new CarsPreferenceReader();
+        List<Integer> users = preferenceReader.readUsers(Cars1.getUsersPath());
+        Multimap<Integer, PrefEntry> preferences = preferenceReader.readPreferences(Cars1.getPrefsPath(), users);
+        Map<Identifiable, Set<CarAttribute>> objects = preferenceReader.readItems(Cars1.getItemsPath());
         logger.info("users: {}", users);
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
