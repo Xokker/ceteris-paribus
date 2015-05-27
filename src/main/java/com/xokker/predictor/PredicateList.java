@@ -6,6 +6,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * @author Ernest Sadykov
  * @since 27.05.2015
@@ -56,7 +58,8 @@ public class PredicateList<A extends Attribute> {
                 String key = firstEntry.getKey();
                 Pair<A, A> value = firstEntry.getValue();
                 if (second != null && second.containsKey(key)) {
-                    if (second.get(key).equals(value)) {
+                    // numeric attributes must be treated differently
+                    if (second.get(key).equals(value) || value.getLeft().isNumeric() && second.containsKey(key)) {
                         result.put(pred, key, value);
                     }
                 }
@@ -68,5 +71,15 @@ public class PredicateList<A extends Attribute> {
 
     public Map<AttributePredicate, Map<String, Pair<A, A>>> getData() {
         return data;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("PL: ");
+        for (AttributePredicate predicate : data.keySet()) {
+            sb.append(predicate.name())
+                    .append(data.get(predicate).keySet().stream().collect(joining(", ", "(", ")")));
+        }
+        return sb.toString();
     }
 }

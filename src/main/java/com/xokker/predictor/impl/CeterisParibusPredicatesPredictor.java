@@ -178,10 +178,21 @@ public class CeterisParibusPredicatesPredictor<A extends Attribute> implements P
         Map<AttributePredicate, Map<String, Pair<A, A>>> data = f.getData();
         for (AttributePredicate p : data.keySet()) {
             Map<String, Pair<A, A>> pairs = data.get(p);
-            for (Pair<A, A> pair : pairs.values()) {
-                if (groupped.values().contains(pair)) {
-                    if (!p.check(pair.getLeft(), pair.getRight())) {
-                        return false;
+            for (Map.Entry<String, Pair<A, A>> entry : pairs.entrySet()) {
+                Pair<A, A> pair = entry.getValue();
+                String category = entry.getKey();
+                if (pair.getLeft().isNumeric()) {
+                    if (groupped.containsKey(category)) {
+                        Pair<A, A> ghPair = groupped.get(category);
+                        if (!p.check(ghPair.getLeft(), ghPair.getRight())) {
+                            return false;
+                        }
+                    }
+                } else {
+                    if (groupped.values().contains(pair)) {
+                        if (!p.check(pair.getLeft(), pair.getRight())) {
+                            return false;
+                        }
                     }
                 }
             }
