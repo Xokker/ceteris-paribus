@@ -1,10 +1,11 @@
-package com.xokker.datasets.cars;
+package com.xokker.datasets.sushi;
 
 import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
 import com.xokker.datasets.Datasets;
+import com.xokker.datasets.cars.AbstractCars;
 import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
@@ -29,17 +30,17 @@ import static java.util.stream.Collectors.toList;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class Cars2 extends AbstractCars<CarAttribute> {
+public class Sushi2 extends AbstractCars<SushiAttribute> {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cars2.class);
+    private static final Logger logger = LoggerFactory.getLogger(Sushi2.class);
 
     /**
      * Cross-validation for single user
      */
     @Override
-    protected Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
+    protected Stats crossValidation(Map<Identifiable, Set<SushiAttribute>> objects,
                                     Collection<PrefEntry> preferences,
-                                    Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
+                                    Function<PreferenceContext<SushiAttribute>, PreferencePredictor<SushiAttribute>> predictorCreator) {
 
         Stats result = new Stats();
         for (int removedElementIndex = 0; removedElementIndex < objects.keySet().size(); removedElementIndex++) {
@@ -66,12 +67,12 @@ public class Cars2 extends AbstractCars<CarAttribute> {
                 PreferenceGraph preferenceGraph = new ArrayPreferenceGraph(objects.size());
                 PreferenceGraph.init(preferenceGraph, preferences);
 
-                Set<CarAttribute> possibleAttributes = mergeSets(objects.values());
+                Set<SushiAttribute> possibleAttributes = mergeSets(objects.values());
 
-                PreferenceContext<CarAttribute> context = new PreferenceContext<>(possibleAttributes, filteredPreferenceGraph);
+                PreferenceContext<SushiAttribute> context = new PreferenceContext<>(possibleAttributes, filteredPreferenceGraph);
 
                 context.addObjects(mapWithoutKeys(objects, removedElements));
-                PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
+                PreferencePredictor<SushiAttribute> predictor = predictorCreator.apply(context);
                 predictor.init();
 
                 Set<Support> ret1 = predictor.predictPreference(objects.get(current), objects.get(removedElement));
@@ -106,9 +107,9 @@ public class Cars2 extends AbstractCars<CarAttribute> {
     }
 
     public static void main(String[] args) throws IOException {
-        Cars2 cars2 = new Cars2();
+        Sushi2 cars2 = new Sushi2();
 //        cars2.remove2Elements();
 //        cars2.perform((context) -> new J48Predictor<CarAttribute>(context, true, true));
-        cars2.perform(Datasets.Cars1, (context) -> new CeterisParibusPredicatesPredictor<CarAttribute>(context));
+        cars2.perform(Datasets.SushiA, (context) -> new CeterisParibusPredicatesPredictor<SushiAttribute>(context));
     }
 }

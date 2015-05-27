@@ -4,6 +4,7 @@ import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
+import com.xokker.datasets.Datasets;
 import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
@@ -105,6 +106,6 @@ public class Cars3 extends AbstractCars<CarAttribute> {
     public static void main(String[] args) throws IOException {
         Cars3 cars3 = new Cars3();
 //        cars3.remove2Elements();
-        cars3.perform(CeterisParibusPredicatesPredictor::new);
+        cars3.perform(Datasets.Cars1, CeterisParibusPredicatesPredictor::new);
     }
 }

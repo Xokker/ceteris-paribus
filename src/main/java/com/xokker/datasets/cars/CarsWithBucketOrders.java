@@ -1,6 +1,7 @@
 package com.xokker.datasets.cars;
 
 import com.xokker.*;
+import com.xokker.datasets.Datasets;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
@@ -129,6 +130,6 @@ public class CarsWithBucketOrders extends AbstractCars<CarAttribute> {
 
     public static void main(String[] args) throws IOException {
         CarsWithBucketOrders carsWithBucketOrders = new CarsWithBucketOrders();
-        carsWithBucketOrders.perform(CeterisParibusPredictor::new);
+        carsWithBucketOrders.perform(Datasets.Cars1, CeterisParibusPredictor::new);
     }
 }

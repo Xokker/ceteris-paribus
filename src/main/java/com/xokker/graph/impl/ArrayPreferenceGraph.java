@@ -2,10 +2,15 @@ package com.xokker.graph.impl;
 
 import com.google.common.base.Preconditions;
 import com.xokker.Identifiable;
+import com.xokker.PrefEntry;
 import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+
+import static com.xokker.IntIdentifiable.ii;
 
 /**
  * Matrix-based implementation of preference graph
@@ -44,6 +49,19 @@ public class ArrayPreferenceGraph implements PreferenceGraph {
         }
 
         return newPref;
+    }
+
+    public Collection<PrefEntry> toEntries() {
+        Collection<PrefEntry> result = new ArrayList<>();
+        for (int i = 0; i < preferences.length; i++) {
+            for (int j = 0; j < preferences[i].length; j++) {
+                if (i != j && preferences[i][j] == PrefState.Leq) {
+                    result.add(new PrefEntry(ii(j), ii(i)));
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override

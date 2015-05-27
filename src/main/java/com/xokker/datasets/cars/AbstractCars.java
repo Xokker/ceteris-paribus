@@ -7,6 +7,7 @@ import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
 import com.xokker.datasets.Attribute;
+import com.xokker.datasets.Datasets;
 import com.xokker.datasets.PreferenceReader;
 import com.xokker.predictor.PreferencePredictor;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.xokker.datasets.Datasets.Cars1;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -35,20 +35,25 @@ public abstract class AbstractCars<A extends Attribute<A>> {
      * @return key - user
      *         value - stats for this user
      */
-    public Map<Integer, Stats> crossValidation(
-            Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator)
+    public Map<Integer, Stats> crossValidation(Datasets dataset,
+            Function<PreferenceContext<A>, PreferencePredictor<A>> predictorCreator)
             throws IOException {
 
-        PreferenceReader preferenceReader = new CarsPreferenceReader();
-        List<Integer> users = preferenceReader.readUsers(Cars1.getUsersPath());
-        Multimap<Integer, PrefEntry> preferences = preferenceReader.readPreferences(Cars1.getPrefsPath(), users);
-        Map<Identifiable, Set<A>> objects = preferenceReader.readItems(Cars1.getItemsPath());
+        @SuppressWarnings("unchecked")
+        PreferenceReader<A> preferenceReader = dataset.getReader();
+        List<Integer> users = preferenceReader.readUsers(dataset.getUsersPath());
+        Multimap<Integer, PrefEntry> preferences = preferenceReader.readPreferences(dataset.getPrefsPath(), users);
+        Map<Identifiable, Set<A>> objects = preferenceReader.readItems(dataset.getItemsPath());
         logger.info("users: {}", users);
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
         Map<Integer, Stats> result = new HashMap<>(users.size());
+        int count = 0; // user count restriction
 //        for (Integer user : newArrayList(17)) {
         for (Integer user : users) {
+            if (count++ > 40) {
+                break;
+            }
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);
             logger.info("{} preferences", userPreferences.size());
@@ -65,18 +70,18 @@ public abstract class AbstractCars<A extends Attribute<A>> {
      */
     protected abstract Stats crossValidation(Map<Identifiable, Set<A>> objects,
                                   Collection<PrefEntry> preferences,
-                                  Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator);
+                                  Function<PreferenceContext<A>, PreferencePredictor<A>> predictorCreator);
 
 
-    protected Map<Identifiable, Set<CarAttribute>> mapWithoutKeys(Map<Identifiable, Set<CarAttribute>> objects, Collection<Identifiable> remove) {
-        Map<Identifiable, Set<CarAttribute>> objectsWithoutElement = new HashMap<>(objects);
+    protected Map<Identifiable, Set<A>> mapWithoutKeys(Map<Identifiable, Set<A>> objects, Collection<Identifiable> remove) {
+        Map<Identifiable, Set<A>> objectsWithoutElement = new HashMap<>(objects);
         for (Identifiable identifiable : remove) {
             objectsWithoutElement.remove(identifiable);
         }
         return objectsWithoutElement;
     }
 
-    protected Map<Identifiable, Set<CarAttribute>> mapWithoutKey(Map<Identifiable, Set<CarAttribute>> objects, Identifiable removedElement) {
+    protected Map<Identifiable, Set<A>> mapWithoutKey(Map<Identifiable, Set<A>> objects, Identifiable removedElement) {
         return mapWithoutKeys(objects, Collections.singleton(removedElement));
     }
 
@@ -86,10 +91,10 @@ public abstract class AbstractCars<A extends Attribute<A>> {
                 .collect(toSet());
     }
 
-    protected void perform(Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
+    protected void perform(Datasets datasets, Function<PreferenceContext<A>, PreferencePredictor<A>> predictorCreator) {
         Collection<Stats> stats;
         try {
-            stats = crossValidation(predictorCreator).values();
+            stats = crossValidation(datasets, predictorCreator).values();
         } catch (IOException e) {
             e.printStackTrace();
             return;
