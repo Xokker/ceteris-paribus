@@ -29,16 +29,36 @@ public class PredicateList<A extends Attribute> {
         }
     }
 
-    public PredicateList<A> intersect(PredicateList<A> gh) {
+    /*
+
+    this:
+    EQ -> {Body -> (Sedan, Sedan),
+           Transmission -> (Manual, Manual)}
+    LT -> {Engine -> (S, XL)}
+
+    that:
+    EQ -> {Fuel -> (Hybrid, Hybrid),
+           Transmission -> (Automatic, Automatic),
+           Body -> (Sedan, Sedan)}
+    LT -> {Engine -> (XS, XL)}
+
+    result:
+    EQ -> {Body -> (Sedan, Sedan)}
+    LT -> {Engine -> (S, XL)}
+
+     */
+    public PredicateList<A> intersect(PredicateList<A> that) {
         PredicateList<A> result = new PredicateList<>();
         for (AttributePredicate pred : data.keySet()) {
-            Map<String, Pair<A, A>> first = data.get(pred);
-            Map<String, Pair<A, A>> second = gh.data.get(pred);
+            Map<String, Pair<A, A>> first = this.data.get(pred);
+            Map<String, Pair<A, A>> second = that.data.get(pred);
             for (Map.Entry<String, Pair<A, A>> firstEntry : first.entrySet()) {
                 String key = firstEntry.getKey();
                 Pair<A, A> value = firstEntry.getValue();
-                if (second != null && second.containsKey(key) && second.get(key).equals(value)) {
-                    result.put(pred, key, value);
+                if (second != null && second.containsKey(key)) {
+                    if (second.get(key).equals(value)) {
+                        result.put(pred, key, value);
+                    }
                 }
             }
         }
