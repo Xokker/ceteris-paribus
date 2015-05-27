@@ -6,6 +6,7 @@ import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
+import com.xokker.datasets.Attribute;
 import com.xokker.datasets.PreferenceReader;
 import com.xokker.predictor.PreferencePredictor;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -24,7 +25,7 @@ import static java.util.stream.Collectors.toSet;
  * @author Ernest Sadykov
  * @since 21.05.2015
  */
-public abstract class AbstractCars {
+public abstract class AbstractCars<A extends Attribute<A>> {
 
     private static final Logger logger = LoggerFactory.getLogger(Cars2.class);
 
@@ -41,7 +42,7 @@ public abstract class AbstractCars {
         PreferenceReader preferenceReader = new CarsPreferenceReader();
         List<Integer> users = preferenceReader.readUsers(Cars1.getUsersPath());
         Multimap<Integer, PrefEntry> preferences = preferenceReader.readPreferences(Cars1.getPrefsPath(), users);
-        Map<Identifiable, Set<CarAttribute>> objects = preferenceReader.readItems(Cars1.getItemsPath());
+        Map<Identifiable, Set<A>> objects = preferenceReader.readItems(Cars1.getItemsPath());
         logger.info("users: {}", users);
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
@@ -62,7 +63,7 @@ public abstract class AbstractCars {
     /**
      * Cross-validation for single user
      */
-    protected abstract Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
+    protected abstract Stats crossValidation(Map<Identifiable, Set<A>> objects,
                                   Collection<PrefEntry> preferences,
                                   Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator);
 

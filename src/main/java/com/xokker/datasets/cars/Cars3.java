@@ -8,7 +8,7 @@ import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
-import com.xokker.predictor.impl.CeterisParibusPredictor;
+import com.xokker.predictor.impl.CeterisParibusPredicatesPredictor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.toList;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class Cars3 extends AbstractCars {
+public class Cars3 extends AbstractCars<CarAttribute> {
 
     private static final Logger logger = LoggerFactory.getLogger(Cars3.class);
 
@@ -104,7 +104,7 @@ public class Cars3 extends AbstractCars {
 
     public static void main(String[] args) throws IOException {
         Cars3 cars3 = new Cars3();
-        cars3.remove2Elements();
-        cars3.perform(CeterisParibusPredictor::new);
+//        cars3.remove2Elements();
+        cars3.perform(CeterisParibusPredicatesPredictor::new);
     }
 }

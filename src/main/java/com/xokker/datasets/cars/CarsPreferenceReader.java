@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toMap;
  * @author Ernest Sadykov
  * @since 20.04.2015
  */
-public class CarsPreferenceReader implements PreferenceReader {
+public class CarsPreferenceReader implements PreferenceReader<CarAttribute> {
 
     /**
      * @return key - userId, value - their preferences
