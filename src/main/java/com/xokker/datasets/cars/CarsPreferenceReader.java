@@ -7,9 +7,6 @@ import com.xokker.PrefEntry;
 import com.xokker.datasets.PreferenceReader;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static com.xokker.IntIdentifiable.ii;
@@ -28,7 +25,7 @@ public class CarsPreferenceReader implements PreferenceReader<CarAttribute> {
      */
     public Multimap<Integer, PrefEntry> readPreferences(String pathToFile, List<Integer> users) throws IOException {
         ImmutableMultimap.Builder<Integer, PrefEntry> builder = ImmutableMultimap.builder();
-        readLines(pathToFile).stream()
+        PreferenceReader.readLines(pathToFile).stream()
                 .skip(1)                                  // skip header
                 .map(s -> s.split(","))
                 .filter(ar -> Objects.equals(ar[3], "0")) // skip control questions
@@ -45,7 +42,7 @@ public class CarsPreferenceReader implements PreferenceReader<CarAttribute> {
     }
 
     public Map<Identifiable, Set<CarAttribute>> readItems(String pathToFile) throws IOException {
-        List<String> lines = readLines(pathToFile);
+        List<String> lines = PreferenceReader.readLines(pathToFile);
         String[] headers = getHeaders(lines.get(0));
 
         return lines.stream()
@@ -74,7 +71,7 @@ public class CarsPreferenceReader implements PreferenceReader<CarAttribute> {
     }
 
     public List<Integer> readUsers(String pathToFile) throws IOException {
-        return readLines(pathToFile).stream()
+        return PreferenceReader.readLines(pathToFile).stream()
                 .skip(1)
                 .map(s -> s.split(","))
                 .filter(ar -> "5".equals(ar[5])) // exclude liars
@@ -82,10 +79,4 @@ public class CarsPreferenceReader implements PreferenceReader<CarAttribute> {
                 .map(Integer::parseInt)
                 .collect(toList());
     }
-
-    private static List<String> readLines(String pathToFile) throws IOException {
-        Path path = Paths.get(pathToFile);
-        return Files.readAllLines(path);
-    }
-
 }

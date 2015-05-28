@@ -10,9 +10,6 @@ import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static com.xokker.IntIdentifiable.ii;
@@ -31,7 +28,7 @@ public class SushiPreferencesFileReader implements PreferenceReader<SushiAttribu
     @Override
     public Multimap<Integer, PrefEntry> readPreferences(String pathToFile, List<Integer> users) throws IOException {
         ImmutableMultimap.Builder<Integer, PrefEntry> builder = ImmutableMultimap.builder();
-        List<List<Identifiable>> rows = readLines(pathToFile).stream()
+        List<List<Identifiable>> rows = PreferenceReader.readLines(pathToFile).stream()
                 .skip(1)                    // skip header
                 .map(s -> s.split(" "))
                 .map(ar -> Arrays.copyOfRange(ar, 2, ar.length))
@@ -57,7 +54,7 @@ public class SushiPreferencesFileReader implements PreferenceReader<SushiAttribu
 
     @Override
     public Map<Identifiable, Set<SushiAttribute>> readItems(String pathToFile) throws IOException {
-        List<String> lines = readLines(pathToFile);
+        List<String> lines = PreferenceReader.readLines(pathToFile);
         String[] headers = getHeaders(lines.get(0));
         Map<Identifiable, Set<SushiAttribute>> result = new HashMap<>();
 
@@ -89,16 +86,10 @@ public class SushiPreferencesFileReader implements PreferenceReader<SushiAttribu
 
     @Override
     public List<Integer> readUsers(String pathToFile) throws IOException {
-        return readLines(pathToFile).stream()
+        return PreferenceReader.readLines(pathToFile).stream()
                 .map(s -> s.split("\t"))
                 .map(ar -> ar[0])
                 .map(Integer::parseInt)
                 .collect(toList());
     }
-
-    private static List<String> readLines(String pathToFile) throws IOException {
-        Path path = Paths.get(pathToFile);
-        return Files.readAllLines(path);
-    }
-
 }

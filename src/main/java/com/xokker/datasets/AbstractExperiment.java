@@ -7,7 +7,6 @@ import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
 import com.xokker.predictor.PreferencePredictor;
-import com.xokker.util.CollectionUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +44,15 @@ public abstract class AbstractExperiment<A extends Attribute<A>> {
         logger.info("users: {}", users);
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
+        List<Integer> userForIteration = dataset.usersForIteration();
+        if (userForIteration != null) {
+            users = userForIteration;
+        }
+
         Map<Integer, Stats> result = new HashMap<>(users.size());
 //        for (Integer user : newArrayList(17)) {
-        for (Integer user : CollectionUtils.randomElements(users, 300)) {
+        for (Integer user : users) {
+//        for (Integer user : users) {
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);
             logger.info("{} preferences", userPreferences.size());
