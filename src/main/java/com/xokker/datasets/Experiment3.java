@@ -1,16 +1,15 @@
-package com.xokker.datasets.cars;
+package com.xokker.datasets;
 
 import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
-import com.xokker.datasets.Datasets;
+import com.xokker.datasets.cars.CarAttribute;
 import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
 import com.xokker.predictor.impl.CeterisParibusPredicatesPredictor;
-import com.xokker.predictor.impl.Support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,17 +28,17 @@ import static java.util.stream.Collectors.toList;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class Cars2 extends AbstractCars<CarAttribute> {
+public class Experiment3<T extends Attribute<T>> extends AbstractExperiment<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cars2.class);
+    private static final Logger logger = LoggerFactory.getLogger(Experiment3.class);
 
     /**
      * Cross-validation for single user
      */
     @Override
-    protected Stats crossValidation(Map<Identifiable, Set<CarAttribute>> objects,
+    protected Stats crossValidation(Map<Identifiable, Set<T>> objects,
                                     Collection<PrefEntry> preferences,
-                                    Function<PreferenceContext<CarAttribute>, PreferencePredictor<CarAttribute>> predictorCreator) {
+                                    Function<PreferenceContext<T>, PreferencePredictor<T>> predictorCreator) {
 
         Stats result = new Stats();
         for (int removedElementIndex = 0; removedElementIndex < objects.keySet().size(); removedElementIndex++) {
@@ -51,6 +50,7 @@ public class Cars2 extends AbstractCars<CarAttribute> {
                 if (current.equals(removedElement)) {
                     continue;
                 }
+
                 Set<Identifiable> removedElements = newHashSet(removedElement);
                 if (isRemove2Elements()) {
                     removedElements.add(current);
@@ -66,28 +66,26 @@ public class Cars2 extends AbstractCars<CarAttribute> {
                 PreferenceGraph preferenceGraph = new ArrayPreferenceGraph(objects.size());
                 PreferenceGraph.init(preferenceGraph, preferences);
 
-                Set<CarAttribute> possibleAttributes = mergeSets(objects.values());
+                Set<T> possibleAttributes = mergeSets(objects.values());
 
-                PreferenceContext<CarAttribute> context = new PreferenceContext<>(possibleAttributes, filteredPreferenceGraph);
+                PreferenceContext<T> context = new PreferenceContext<>(possibleAttributes, filteredPreferenceGraph);
 
                 context.addObjects(mapWithoutKeys(objects, removedElements));
-                PreferencePredictor<CarAttribute> predictor = predictorCreator.apply(context);
+                PreferencePredictor<T> predictor = predictorCreator.apply(context);
                 predictor.init();
 
-                Set<Support> ret1 = predictor.predictPreference(objects.get(current), objects.get(removedElement));
-                int support1 = ret1.size();
-                Set<Support> ret2 = predictor.predictPreference(objects.get(removedElement), objects.get(current));
-                int support2 = ret2.size();
+                int comparison = predictor.predict(objects.get(current), objects.get(removedElement));
+
                 double currentPenalty = 0.0;
-                if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && support1 > support2) {
+                if (preferenceGraph.leq(removedElement, current) == PrefState.Leq && comparison < 0) {
                     currentPenalty = 1;
                     result.falsePositive();
                 }
-                if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && support1 < support2) {
+                if (preferenceGraph.leq(removedElement, current) == PrefState.NotLeq && comparison > 0) {
                     currentPenalty = 1;
                     result.falsePositive();
                 }
-                if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && support1 == support2) {
+                if (preferenceGraph.leq(removedElement, current) != PrefState.Unknown && comparison == 0) {
                     currentPenalty = 0.5;
                     result.falseNegative();
                 }
@@ -95,7 +93,7 @@ public class Cars2 extends AbstractCars<CarAttribute> {
                     result.truePositive();
                 }
                 penalty += currentPenalty;
-                logger.info("{} vs {} for elements {} and {}. pen: {}", support1, support2, removedElement, current, currentPenalty);
+                logger.info("comp: {} for elements {} and {}. pen: {}", comparison, removedElement, current, currentPenalty);
             }
 
             result.addPenalty(1 - penalty / 9);
@@ -106,9 +104,8 @@ public class Cars2 extends AbstractCars<CarAttribute> {
     }
 
     public static void main(String[] args) throws IOException {
-        Cars2 cars2 = new Cars2();
-//        cars2.remove2Elements();
-//        cars2.perform((context) -> new J48Predictor<CarAttribute>(context, true, true));
-        cars2.perform(Datasets.Cars1, (context) -> new CeterisParibusPredicatesPredictor<CarAttribute>(context));
+        Experiment3<CarAttribute> exp3 = new Experiment3<>();
+//        exp3.remove2Elements();
+        exp3.perform(Datasets.Cars1, CeterisParibusPredicatesPredictor::new);
     }
 }

@@ -1,4 +1,4 @@
-package com.xokker.datasets.cars;
+package com.xokker.datasets;
 
 import com.google.common.collect.Multimap;
 import com.google.common.primitives.Doubles;
@@ -6,10 +6,8 @@ import com.xokker.Identifiable;
 import com.xokker.PrefEntry;
 import com.xokker.PreferenceContext;
 import com.xokker.Stats;
-import com.xokker.datasets.Attribute;
-import com.xokker.datasets.Datasets;
-import com.xokker.datasets.PreferenceReader;
 import com.xokker.predictor.PreferencePredictor;
+import com.xokker.util.CollectionUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +23,9 @@ import static java.util.stream.Collectors.toSet;
  * @author Ernest Sadykov
  * @since 21.05.2015
  */
-public abstract class AbstractCars<A extends Attribute<A>> {
+public abstract class AbstractExperiment<A extends Attribute<A>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(Cars2.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractExperiment.class);
 
     private boolean remove2Elements = false;
 
@@ -48,12 +46,8 @@ public abstract class AbstractCars<A extends Attribute<A>> {
         objects.entrySet().stream().forEach(e -> logger.info("{} -> {}", e.getKey(), e.getValue()));
 
         Map<Integer, Stats> result = new HashMap<>(users.size());
-        int count = 0; // user count restriction
 //        for (Integer user : newArrayList(17)) {
-        for (Integer user : users) {
-            if (count++ > 40) {
-                break;
-            }
+        for (Integer user : CollectionUtils.randomElements(users, 300)) {
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);
             logger.info("{} preferences", userPreferences.size());

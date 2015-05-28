@@ -1,6 +1,7 @@
 package com.xokker.datasets.cars;
 
 import com.xokker.*;
+import com.xokker.datasets.AbstractExperiment;
 import com.xokker.datasets.Datasets;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
@@ -21,7 +22,7 @@ import static com.xokker.graph.PreferenceGraph.initBucketOrder;
  * @author Ernest Sadykov
  * @since 24.04.2015
  */
-public class CarsWithBucketOrders extends AbstractCars<CarAttribute> {
+public class CarsWithBucketOrders extends AbstractExperiment<CarAttribute> {
 
     private static final Logger logger = LoggerFactory.getLogger(CarsWithBucketOrders.class);
 

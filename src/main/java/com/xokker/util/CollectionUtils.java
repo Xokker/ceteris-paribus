@@ -3,8 +3,7 @@ package com.xokker.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 
-import java.util.Collection;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author Ernest Sadykov
@@ -19,6 +18,16 @@ public class CollectionUtils {
 
         int position = random.nextInt(items.size());
         return Iterators.get(items.iterator(), position);
+    }
+
+    public static <T> Collection<T> randomElements(Collection<T> items, int n) {
+        if (n > items.size()) {
+            return items;
+        }
+        List<T> list = new ArrayList<>(items);
+        Collections.shuffle(list);
+
+        return list.subList(0, n);
     }
 
     public static <T> T removeRandom(Collection<T> items) {
