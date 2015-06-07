@@ -1,5 +1,6 @@
 package com.xokker.datasets;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.primitives.Doubles;
 import com.xokker.Identifiable;
@@ -51,8 +52,8 @@ public abstract class AbstractExperiment<A extends Attribute<A>> {
 
         Map<Integer, Stats> result = new HashMap<>(users.size());
 //        for (Integer user : newArrayList(17)) {
+//        for (Integer user : users.subList(0, 50)) {
         for (Integer user : users) {
-//        for (Integer user : users) {
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);
             logger.info("{} preferences", userPreferences.size());
@@ -90,13 +91,13 @@ public abstract class AbstractExperiment<A extends Attribute<A>> {
                 .collect(toSet());
     }
 
-    protected void perform(Datasets datasets, Function<PreferenceContext<A>, PreferencePredictor<A>> predictorCreator) {
+    public Map<String, DescriptiveStatistics> perform(Datasets datasets, Function<PreferenceContext<A>, PreferencePredictor<A>> predictorCreator) {
         Collection<Stats> stats;
         try {
             stats = crossValidation(datasets, predictorCreator).values();
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
         List<Double> values = stats.stream().map(Stats::getAveragePenalty).collect(toList());
@@ -107,6 +108,12 @@ public abstract class AbstractExperiment<A extends Attribute<A>> {
         DescriptiveStatistics dsPrecision = new DescriptiveStatistics(Doubles.toArray(stats.stream().map(Stats::getPrecision).collect(toList())));
         DescriptiveStatistics dsRecall = new DescriptiveStatistics(Doubles.toArray(stats.stream().map(Stats::getRecall).collect(toList())));
         logger.info("precision: {} \n recall: {}", dsPrecision.toString(), dsRecall.toString());
+
+        return ImmutableMap.of(
+                "accuracy", descriptiveStatistics,
+                "precision", dsPrecision,
+                "recall", dsRecall
+        );
     }
 
     public boolean isRemove2Elements() {

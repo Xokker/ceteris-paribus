@@ -28,9 +28,15 @@ public class CeterisParibusPredictor<A extends Attribute> implements PreferenceP
     private static final Logger logger = LoggerFactory.getLogger(CeterisParibusPredictor.class);
 
     private final PreferenceContext<A> context;
+    private final boolean countSupport;
 
     public CeterisParibusPredictor(PreferenceContext<A> context) {
+        this(context, false);
+    }
+
+    public CeterisParibusPredictor(PreferenceContext<A> context, boolean countSupport) {
         this.context = context;
+        this.countSupport = countSupport;
     }
 
     /**
@@ -54,15 +60,17 @@ public class CeterisParibusPredictor<A extends Attribute> implements PreferenceP
                     );
                     if (checkPreference(d, f, e)) {
                         logger.trace("{} <{}= {}    for {} and {}", d, f, e, a, b);
-//                        result.add(new Support(g, h));
-                        return singleton(new Support(g, h));
+                        if (countSupport) {
+                            result.add(new Support(g, h));
+                        } else {
+                            return singleton(new Support(g, h));
+                        }
                     }
                 }
             }
         }
 
-//        return result;
-        return Collections.emptySet();
+        return result;
     }
 
     /**
