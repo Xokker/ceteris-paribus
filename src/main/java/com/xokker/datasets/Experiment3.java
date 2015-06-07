@@ -42,6 +42,10 @@ public class Experiment3<T extends Attribute<T>> extends AbstractExperiment<T> {
 
         Stats result = new Stats();
         for (int removedElementIndex = 0; removedElementIndex < objects.keySet().size(); removedElementIndex++) {
+            if (Thread.currentThread().isInterrupted()) {
+                break;
+            }
+
             Identifiable removedElement = ii(removedElementIndex);
 
             double penalty = 0;
@@ -105,7 +109,7 @@ public class Experiment3<T extends Attribute<T>> extends AbstractExperiment<T> {
 
     public static void main(String[] args) throws IOException {
         Experiment3<CarAttribute> exp3 = new Experiment3<>();
-//        exp3.remove2Elements();
-        exp3.perform(Datasets.Cars1, CeterisParibusPredicatesPredictor::new);
+        exp3.remove2Elements();
+        exp3.perform(Datasets.SushiA, CeterisParibusPredicatesPredictor::new);
     }
 }

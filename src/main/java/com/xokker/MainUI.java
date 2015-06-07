@@ -8,8 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executors;
 
 /**
@@ -27,11 +30,13 @@ public class MainUI {
     private JSpinner spinner1;
     private JTextArea resultsTextArea;
     private JCheckBox twoOut;
+    private JButton cancelButton;
 
     private String selectedDataset;
     private String selectedAlgorithm;
 
     private ListeningExecutorService executor;
+    private ListenableFuture<Map<String, DescriptiveStatistics>> future = null;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("MainUI");
@@ -47,6 +52,7 @@ public class MainUI {
         this.selectedDataset = datasetCombobox.getSelectedItem().toString();
         this.selectedAlgorithm = algorithmComboBox.getSelectedItem().toString();
         resultsTextArea.setEditable(false);
+        cancelButton.setEnabled(false);
 
         this.executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
     }
@@ -74,6 +80,14 @@ public class MainUI {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 this.selectedAlgorithm = algorithmComboBox.getSelectedItem().toString();
                 this.selectedAlgorithm = e.getItem().toString();
+            }
+        });
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (future != null && !future.isDone()) {
+                    future.cancel(true);
+                }
             }
         });
     }
@@ -109,9 +123,9 @@ public class MainUI {
     }
 
     private void buttonClicked() {
+        calculateButton.setEnabled(false);
         printResult("выполняются вычисления. \nэто может занять несколько минут...");
 
-        ListenableFuture<Map<String, DescriptiveStatistics>> future = null;
         switch (selectedAlgorithm) {
             case "ceteris paribus (CP)": {
                 AbstractExperiment<? extends Attribute> exp = exp2();
@@ -171,11 +185,19 @@ public class MainUI {
                 sb.append("\nполнота:\n").append(result.get("recall").toString());
 
                 printResult(sb.toString());
+                cancelButton.setEnabled(false);
+                calculateButton.setEnabled(true);
             }
 
             @Override
             public void onFailure(Throwable t) {
-                printResult("Something went wrong\nError message: " + t.getMessage());
+                if (t instanceof CancellationException) {
+                    printResult("выполнение прервано");
+                } else {
+                    printResult("Что-то пошло не так\nОшибка: " + t.getMessage());
+                }
+                cancelButton.setEnabled(false);
+                calculateButton.setEnabled(true);
             }
         });
     }
@@ -186,6 +208,7 @@ public class MainUI {
             exp2.remove2Elements();
         }
         logClick();
+        cancelButton.setEnabled(true);
 
         return exp2;
     }
@@ -196,6 +219,7 @@ public class MainUI {
             exp3.remove2Elements();
         }
         logClick();
+        cancelButton.setEnabled(true);
 
         return exp3;
     }
