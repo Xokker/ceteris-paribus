@@ -46,6 +46,8 @@ public class MainUI {
         carsSelected();
         this.selectedDataset = datasetCombobox.getSelectedItem().toString();
         this.selectedAlgorithm = algorithmComboBox.getSelectedItem().toString();
+        resultsTextArea.setEditable(false);
+
         this.executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
     }
 
@@ -163,10 +165,10 @@ public class MainUI {
         Futures.addCallback(future, new FutureCallback<Map<String, DescriptiveStatistics>>() {
             @Override
             public void onSuccess(Map<String, DescriptiveStatistics> result) {
-                StringBuilder sb = new StringBuilder("Results:\n");
-                sb.append("правильность:\n").append(result.get("accuracy").toString());
-                sb.append("точность:\n").append(result.get("precision").toString());
-                sb.append("полнота:\n").append(result.get("recall").toString());
+                StringBuilder sb = new StringBuilder("Results:\n\n");
+                sb.append("\nправильность:\n").append(result.get("accuracy").toString());
+                sb.append("\nточность:\n").append(result.get("precision").toString());
+                sb.append("\nполнота:\n").append(result.get("recall").toString());
 
                 printResult(sb.toString());
             }
