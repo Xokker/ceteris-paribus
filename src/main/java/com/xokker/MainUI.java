@@ -1,13 +1,8 @@
 package com.xokker;
 
 import com.google.common.util.concurrent.*;
-import com.xokker.datasets.Datasets;
-import com.xokker.datasets.Experiment2;
-import com.xokker.datasets.sushi.SushiAttribute;
-import com.xokker.predictor.impl.BayesNetPredictor;
-import com.xokker.predictor.impl.CeterisParibusPredicatesPredictor;
-import com.xokker.predictor.impl.J48Predictor;
-import com.xokker.predictor.impl.NaiveBayesPredictor;
+import com.xokker.datasets.*;
+import com.xokker.predictor.impl.*;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,39 +111,48 @@ public class MainUI {
 
         ListenableFuture<Map<String, DescriptiveStatistics>> future = null;
         switch (selectedAlgorithm) {
-            case "ceteris paribus (CP)":
+            case "ceteris paribus (CP)": {
+                AbstractExperiment<? extends Attribute> exp = exp2();
+                future = executor.submit(() -> exp.perform(getDataset(), CeterisParibusPredictor::new));
                 break;
-            case "CP with support":
+            }
+            case "CP with support": {
+                AbstractExperiment<? extends Attribute> exp = exp2();
+                future = executor.submit(() -> exp.perform(getDataset(), (context) -> new CeterisParibusPredictor<>(context, true)));
                 break;
-            case "CP with fixed DFE":
+            }
+            case "CP with fixed DFE": {
+                AbstractExperiment<? extends Attribute> exp3 = exp3();
+                future = executor.submit(() -> exp3.perform(getDataset(), CeterisParibusPredictor::new));
                 break;
+            }
             case "CP with support, num": {
-                Experiment2<SushiAttribute> exp2 = exp2();
-                future = executor.submit(() -> exp2.perform(getDataset(), (context) -> new CeterisParibusPredicatesPredictor<SushiAttribute>(context, true)));
+                AbstractExperiment<? extends Attribute> exp2 = exp2();
+                future = executor.submit(() -> exp2.perform(getDataset(), (context) -> new CeterisParibusPredicatesPredictor<>(context, true)));
                 break;
             }
             case "C4.5 unpaired":{
-                Experiment2<SushiAttribute> exp2 = exp2();
+                AbstractExperiment<? extends Attribute> exp2 = exp2();
                 future = executor.submit(() -> exp2.perform(getDataset(), J48Predictor::new));
                 break;
             }
             case "C4.5 paired":   {
-                Experiment2<SushiAttribute> exp2 = exp2();
+                AbstractExperiment<? extends Attribute> exp2 = exp2();
                 future = executor.submit(() -> exp2.perform(getDataset(), (context) -> new J48Predictor<>(context, true, false)));
                 break;
             }
             case "C4.5 paired, num":  {
-                Experiment2<SushiAttribute> exp2 = exp2();
+                AbstractExperiment<? extends Attribute> exp2 = exp2();
                 future = executor.submit(() -> exp2.perform(getDataset(), (context) -> new J48Predictor<>(context, true, true)));
                 break;
             }
             case "Naive Bayes": {
-                Experiment2<SushiAttribute> exp2 = exp2();
+                AbstractExperiment<? extends Attribute> exp2 = exp2();
                 future = executor.submit(() -> exp2.perform(getDataset(), NaiveBayesPredictor::new));
                 break;
             }
             case "Bayes Net": {
-                Experiment2<SushiAttribute> exp2 = exp2();
+                AbstractExperiment<? extends Attribute> exp2 = exp2();
                 future = executor.submit(() -> exp2.perform(getDataset(), BayesNetPredictor::new));
                 break;
             }
@@ -174,6 +178,26 @@ public class MainUI {
         });
     }
 
+    private AbstractExperiment<? extends Attribute> exp2() {
+        Experiment2<? extends Attribute> exp2 = new Experiment2<>();
+        if (isTwoOut()) {
+            exp2.remove2Elements();
+        }
+        logClick();
+
+        return exp2;
+    }
+
+    private AbstractExperiment<? extends Attribute> exp3() {
+        Experiment3<? extends Attribute> exp3 = new Experiment3<>();
+        if (isTwoOut()) {
+            exp3.remove2Elements();
+        }
+        logClick();
+
+        return exp3;
+    }
+
     private void logClick() {
         logger.info("{}, {}-out", selectedAlgorithm, isTwoOut() ? "2" : "1");
     }
@@ -191,15 +215,5 @@ public class MainUI {
 
     private void printResult(String result) {
         SwingUtilities.invokeLater(() -> resultsTextArea.setText(result));
-    }
-
-    private Experiment2<SushiAttribute> exp2() {
-        Experiment2<SushiAttribute> exp2 = new Experiment2<>();
-        if (isTwoOut()) {
-            exp2.remove2Elements();
-        }
-        logClick();
-
-        return exp2;
     }
 }
