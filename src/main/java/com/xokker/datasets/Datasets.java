@@ -3,6 +3,7 @@ package com.xokker.datasets;
 import com.xokker.datasets.cars.CarsPreferenceReader;
 import com.xokker.datasets.sushi.SushiPreferencesFileReader;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public enum Datasets {
     }
 
     public List<Integer> usersForIteration() throws IOException {
-        if (randomUsers != null) {
+        if (randomUsers != null && new File(randomUsers).exists()) {
             return PreferenceReader.readLines(randomUsers).stream()
                     .map(Integer::parseInt)
                     .collect(toList());
