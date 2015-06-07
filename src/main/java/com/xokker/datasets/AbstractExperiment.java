@@ -54,6 +54,9 @@ public abstract class AbstractExperiment<A extends Attribute<A>> {
 //        for (Integer user : newArrayList(17)) {
 //        for (Integer user : users.subList(0, 50)) {
         for (Integer user : users) {
+            if (Thread.currentThread().isInterrupted()) {
+                break;
+            }
             logger.info("user {}:", user);
             Collection<PrefEntry> userPreferences = preferences.get(user);
             logger.info("{} preferences", userPreferences.size());

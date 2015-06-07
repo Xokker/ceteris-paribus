@@ -9,7 +9,7 @@ import com.xokker.graph.PrefState;
 import com.xokker.graph.PreferenceGraph;
 import com.xokker.graph.impl.ArrayPreferenceGraph;
 import com.xokker.predictor.PreferencePredictor;
-import com.xokker.predictor.impl.CeterisParibusPredicatesPredictor;
+import com.xokker.predictor.impl.BayesNetPredictor;
 import com.xokker.predictor.impl.Support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +43,9 @@ public class Experiment2<T extends Attribute<T>> extends AbstractExperiment<T> {
 
         Stats result = new Stats();
         for (int removedElementIndex = 0; removedElementIndex < objects.keySet().size(); removedElementIndex++) {
+            if (Thread.currentThread().isInterrupted()) {
+                break;
+            }
             Identifiable removedElement = ii(removedElementIndex);
 
             double penalty = 0;
@@ -107,8 +110,9 @@ public class Experiment2<T extends Attribute<T>> extends AbstractExperiment<T> {
 
     public static void main(String[] args) throws IOException {
         Experiment2<SushiAttribute> exp2 = new Experiment2<>();
-//        exp2.remove2Elements();
+        logger.info("net, 2-out");
+        exp2.remove2Elements();
 //        exp2.perform((context) -> new J48Predictor<CarAttribute>(context, true, true));
-        exp2.perform(Datasets.SushiA, (context) -> new CeterisParibusPredicatesPredictor<>(context));
+        exp2.perform(Datasets.SushiA, (context) -> new BayesNetPredictor<SushiAttribute>(context));
     }
 }
